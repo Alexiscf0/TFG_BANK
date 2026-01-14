@@ -1,0 +1,91 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+    display: flex;             /* Activamos Flexbox */
+    justify-content: center;   /* Centrado Horizontal */
+    align-items: center;       /* Centrado Vertical */
+    height: 100vh;             /* Altura completa de la pantalla */
+}
+
+/* 3. LA TARJETA BLANCA (Container) */
+/* Necesitaremos añadir esta clase a un div en tu HTML */
+.card {
+    background-color: white;
+    padding: 2rem;             /* Espacio interior (aprox 32px) */
+    border-radius: 10px;       /* Bordes redondeados */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombrita suave */
+    width: 100%;
+    max-width: 400px;          /* Que no se haga gigante en pantallas grandes */
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+/* 4. LOS INPUTS (Cajas de texto) */
+form {
+    display: flex;
+    flex-direction: column;
+    text-align: left; /* Las etiquetas (labels) alineadas a la izquierda */
+}
+
+label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+input {
+    padding: 10px;
+    margin-bottom: 15px; /* Espacio debajo de cada input */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.3s; /* Animación suave al clicar */
+}
+
+input:focus {
+    outline: none;
+    border-color: #007bff; /* Azul al escribir */
+}
+
+/* 5. EL BOTÓN PRINCIPAL */
+button {
+    padding: 12px;
+    background-color: #007bff; /* Azul Bootstrap */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3; /* Azul más oscuro al pasar el ratón */
+}
+
+/* 6. EL ENLACE INFERIOR */
+p {
+    margin-top: 15px;
+    font-size: 0.9rem;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
