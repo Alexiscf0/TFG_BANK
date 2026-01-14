@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h2>Login</h2>
+    <form  action="login.php" method="POST" id="loginForm" onsubmit="iniciarSesion(event)">
+        
+        <label>Email:</label>
+        <input type ="email" id="email" placeholder="tu@email.com">
+        
+        <br><br> <label>Contraseña:</label>
+        <input type="password" id="password" placeholder="********">
+        <br><br>
+
+        <button type="submit">Acceder</button>
+
+        <p>
+            ¿No tienes cuenta? <a href="register.html">Regístrate aquí</a>
+        </p>
+
+    </form>
+    <script>
+        async function registrarUsuario(event){
+            event.preventDefault();
+
+            const emailCapturado = document.getElementById('email').value;
+            const passwordCapturada = document.getElementById('password').value;
+            
+            const datosAEnviar = {
+                email: emailCapturado,
+                password: passwordCapturada
+            };
+
+            const urlDestino = 'http://localhost/Kibo/BaseDatos/register.php'; 
+
+            try {
+                const respuesta = await fetch(urlDestino, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(datosAEnviar)
+                });
+
+                if (respuesta.ok) {
+                    alert("Usuario creado.");
+                    window.location.href = 'login.html';
+                } else {
+                    alert("Error al registrar (quizás el email ya existe)");
+                }
+            } catch (error) {
+                console.error("Error de conexión:", error);
+                alert("No se pudo conectar con el servidor");
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+<!--
+
+CODIGO QUE DEBERAS USAR EN BACKEND
+
+<?php
+// --- CABECERAS CORS (Importante para que funcione con Live Server) ---
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+
+// Manejo de la solicitud "Preflight" (el navegador pregunta antes de enviar)
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+// --- TU LÓGICA DE LOGIN ---
+// 1. Recibimos el JSON
+$input = file_get_contents("php://input");
+$data = json_decode($input, true); // true para que sea array asociativo
+
+// (Solo para probar que te llega, esto te devolverá lo mismo que enviaste)
+header('Content-Type: application/json');
+echo json_encode([
+    "mensaje" => "¡Conexión exitosa con PHP!",
+    "datos_recibidos" => $data
+]);
+?>-->
+
