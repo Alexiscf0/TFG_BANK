@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - Mi App</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; height: 100vh; display: flex; overflow: hidden; }
+
+        /* BARRA LATERAL */
+        .sidebar { width: 250px; background-color: #7f7f7f; color: #000; display: flex; flex-direction: column; overflow: hidden; transition: width 0.3s ease, padding 0.3s ease; padding: 20px; white-space: nowrap; }
+        .sidebar.cerrado { width: 0; padding: 20px 0; border: none; }
+        .menu-items a { display: block; text-decoration: none; color: black; font-size: 18px; margin-bottom: 20px; padding-left: 10px; border-left: 3px solid transparent; opacity: 1; transition: opacity 0.2s; }
+        .menu-items a:hover { font-weight: bold; border-left: 3px solid #000; }
+
+        /* CONTENIDO */
+        .main-content { flex: 1; background-color: #e0e0e0; padding: 20px; display: flex; flex-direction: column; align-items: center; overflow-y: auto; position: relative; }
+        .btn-menu { align-self: flex-start; font-size: 30px; cursor: pointer; margin-bottom: 20px; background: none; border: none; color: #333; padding: 0 10px; }
+        .btn-menu:hover { color: #7986cb; }
+
+        h1 { font-weight: normal; margin-bottom: 30px; }
+        .graficos-container { display: flex; align-items: flex-end; gap: 20px; margin-bottom: 40px; }
+        .chart { background: conic-gradient(#ef5350 70%, #e57373 0); border-radius: 50%; }
+        .chart-big { width: 150px; height: 150px; }
+        .chart-small { width: 100px; height: 100px; }
+        .actions-container { display: flex; gap: 40px; margin-bottom: 30px; }
+        .btn-purple { background-color: #7986cb; color: black; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; box-shadow: 2px 2px 5px rgba(0,0,0,0.2); transition: background 0.2s; }
+        .btn-purple:hover { background-color: #5c6bc0; }
+        .movimientos-section { text-align: center; width: 100%; max-width: 600px; }
+        .lista-movimientos { list-style: none; text-align: left; margin-bottom: 20px; }
+        .lista-movimientos li { margin-bottom: 10px; font-size: 16px; }
+        .btn-ver-todos { background-color: #7986cb; color: black; border: none; padding: 8px 30px; font-size: 16px; cursor: pointer; }
+        .btn-ver-todos:hover { background-color: #5c6bc0; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar" id="miSidebar">
+        <h3 style="margin-bottom: 30px; text-align: center;">Kibo App</h3>
+        <nav class="menu-items">
+            <a href="index.html" style="font-weight: bold; border-left: 3px solid #000;">- Inicio</a>
+            <a href="historial.html">- Historial</a>
+            <a href="estadistica.html">- Estadísticas</a>
+            <a href="graficos.html">- Gráficos (Hucha)</a>
+            <a href="dashboard.html">- Dashboard IA</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <button class="btn-menu" onclick="alternarMenu()">&#9776;</button>
+
+        <h1>Gráficos</h1>
+
+        <div class="graficos-container">
+            <div class="chart chart-big"></div>
+            <div class="chart chart-small"></div>
+        </div>
+
+        <div class="actions-container">
+            <button class="btn-purple">Registrar dato</button>
+            <button class="btn-purple" onclick="window.location.href='estadistica.html'">Ver estadísticas</button>
+        </div>
+
+        <div class="movimientos-section">
+    <h2>Últimos movimientos</h2>
+    
+    <!--AQUI PARA LA LISTA DE ULTIMOS MOVIMIENTOS-->
+    <ul id="lista-ultimos-movimientos" class="lista-movimientos">
+        <li>Cargando datos recientes...</li>
+    </ul>
+    
+    <button class="btn-ver-todos" onclick="window.location.href='movimientos.html'">Ver todos</button>
+</div>
+    </main>
+
+    <script>
+        function alternarMenu() {
+            document.getElementById('miSidebar').classList.toggle('cerrado');
+        }
+    </script>
+</body>
+</html>

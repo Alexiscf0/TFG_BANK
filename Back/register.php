@@ -1,21 +1,32 @@
 <?php
-require __DIR__ . '/../vendor/autoload.php';
-// Carga todas las librerías instaladas con Composer (MongoDB y JWT).
-
+require 'C:/xampp/htdocs/Kibo/vendor/autoload.php';
 use MongoDB\Client;
-// Importa la clase Client para poder hablar con la base de datos MongoDB.
 
-$client = new Client("mongodb://localhost:27017");
-// Crea la conexión física con tu base de datos local.
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // trim() es fundamental para no guardar espacios invisibles
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
 
-$collection = $client->KIBO->datos;
-// Selecciona la base de datos ("tu_database") y la colección ("usuarios").
+    if (empty($email) || empty($password)) {
+        die("Error: Rellena todos los campos.");
+    }
 
-$passwordHash = password_hash($password, PASSWORD_BCRYPT);
-// LA LÍNEA CLAVE: Toma la contraseña (ej: "1234") y la convierte en un hash
-// irreconocible (ej: "$2y$10$abc..."). Bcrypt hace que sea imposible volver atrás.
+    try {
+        $client = new Client("mongodb+srv://alexiscastelln_db_user:LOLOKRIKO@cluster0.zfxempk.mongodb.net/?appName=Cluster0");
+        $collection = $client->KIBO->datos;
 
-$resultado = $collection->insertOne([
-    "username" => $_POST['username'], // Toma el 'name' del input del HTML
-    "password" => $passwordHash,]);
-// Inserta el documento en MongoDB con el username y la contraseña ya encriptada.
+        // Generamos el hash
+        $passwordHash = password_hash($password, PASSWORD_BCRYPT);
+
+        $collection->insertOne([
+            "email" => $email,
+            "password" => $passwordHash,
+            "fecha_creacion" => date("Y-m-d H:i:s")
+        ]);
+
+        echo "Usuario registrado con éxito. Contraseña procesada con Bcrypt. <a href='../Pages/login.html'>Ir al login</a>";
+    } catch (Exception $e) {
+        die("Error: " . $e->getMessage());
+    }
+}
+?>

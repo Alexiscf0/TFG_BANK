@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movimientos - Kibo App</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; height: 100vh; display: flex; background-color: #e0e0e0; overflow: hidden; }
+
+        /* BARRA LATERAL */
+        .sidebar { width: 250px; background-color: #7f7f7f; padding: 20px; display: flex; flex-direction: column; color: #000; flex-shrink: 0; transition: width 0.3s ease, padding 0.3s ease; overflow: hidden; white-space: nowrap; }
+        .sidebar.cerrado { width: 0; padding: 20px 0; border: none; }
+        .menu-items a { display: block; text-decoration: none; color: black; font-size: 18px; margin-bottom: 20px; padding-left: 10px; border-left: 3px solid transparent; }
+        .menu-items a:hover { font-weight: bold; border-left: 3px solid #000; }
+
+        /* CONTENIDO */
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; }
+        .btn-menu { align-self: flex-start; font-size: 30px; cursor: pointer; margin-bottom: 20px; background: none; border: none; color: #333; padding: 0; }
+        
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        h1 { font-weight: normal; font-size: 28px; }
+        .btn-purple { background-color: #7986cb; color: black; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 4px; }
+
+        /* TABLA */
+        .table-container { background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        thead { background-color: #7986cb; }
+        th { padding: 15px; color: black; font-weight: bold; font-size: 16px; }
+        td { padding: 15px; border-bottom: 1px solid #eee; color: #333; }
+        tbody tr:nth-child(even) { background-color: #f9f9f9; }
+        .monto-positivo { color: green; font-weight: bold; }
+        .monto-negativo { color: #d32f2f; font-weight: bold; }
+        .tag { font-size: 12px; padding: 4px 8px; border-radius: 12px; background-color: #e0e0e0; color: #555; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar" id="miSidebar">
+        <h3 style="margin-bottom: 30px; text-align: center;">Kibo App</h3>
+        <nav class="menu-items">
+            <a href="index.html">- Inicio</a>
+            <a href="movimientos.html" style="font-weight: bold; border-left: 3px solid #000;">- Historial</a>
+            <a href="estadistica.html">- Estadísticas</a>
+            <a href="graficos.html">- Gráficos (Hucha)</a>
+            <a href="dashboard.html">- Dashboard IA</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <button class="btn-menu" onclick="alternarMenu()">&#9776;</button>
+
+        <div class="page-header">
+            <h1>Registro de Movimientos</h1>
+            <button class="btn-purple">Filtrar por fecha</button>
+        </div>
+
+        <div class="table-container">
+            <div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Concepto / Descripción</th>
+                <th>Categoría</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
+        
+        <!-- CHAVAL Aqui entre los dos TBODY -->
+        <tbody id="tabla-movimientos-body"> 
+            </tbody>
+    </table>
+</div>
+        </div>
+    </main>
+
+    <script>
+        function alternarMenu() {
+            document.getElementById('miSidebar').classList.toggle('cerrado');
+        }
+    </script>
+</body>
+</html>

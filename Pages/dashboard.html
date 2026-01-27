@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kibo - Dashboard Inteligente</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { 
+            --bg: #e0e0e0; --card: #ffffff; --accent: #7986cb; --sidebar-bg: #7f7f7f;
+            --text-main: #333333; --state-good: #dcedc8; --text-good: #33691e;
+            --state-bad: #ffcdd2; --text-bad: #b71c1c;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: var(--bg); margin: 0; padding: 0; color: var(--text-main); height: 100vh; display: flex; overflow: hidden; }
+
+        /* SIDEBAR */
+        .sidebar { width: 250px; background-color: var(--sidebar-bg); color: #000; display: flex; flex-direction: column; overflow: hidden; transition: width 0.3s ease, padding 0.3s ease; padding: 20px; white-space: nowrap; flex-shrink: 0; }
+        .sidebar.cerrado { width: 0; padding: 20px 0; border: none; }
+        .menu-items a { display: block; text-decoration: none; color: black; font-size: 18px; margin-bottom: 20px; padding-left: 10px; border-left: 3px solid transparent; }
+        .menu-items a:hover { font-weight: bold; border-left: 3px solid #000; }
+
+        /* CONTENIDO */
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; }
+        .btn-menu { align-self: flex-start; font-size: 30px; cursor: pointer; margin-bottom: 20px; background: none; border: none; color: #333; padding: 0; }
+
+        .container { max-width: 1100px; margin: 0 auto; width: 100%; }
+        header { text-align: center; margin-bottom: 30px; }
+        h1 { font-weight: normal; margin-bottom: 20px; color: #000; }
+        .btn-action { background-color: var(--accent); color: black; border: none; padding: 12px 25px; border-radius: 4px; font-size: 16px; cursor: pointer; box-shadow: 2px 2px 5px rgba(0,0,0,0.2); transition: background 0.3s; }
+        .btn-action:hover { background-color: #5c6bc0; transform: translateY(-2px); }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: var(--card); padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+        h2 { font-size: 18px; margin-bottom: 15px; color: #555; font-weight: bold; }
+        .score-value { font-size: 4rem; font-weight: bold; color: var(--accent); margin: 10px 0; }
+        #scoreMessage { margin-top: 15px; padding: 10px; border-radius: 4px; font-weight: bold; font-size: 14px; }
+        .msg-good { background: var(--state-good); color: var(--text-good); }
+        .msg-bad { background: var(--state-bad); color: var(--text-bad); }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar" id="miSidebar">
+        <h3 style="margin-bottom: 30px; text-align: center;">Kibo App</h3>
+        <nav class="menu-items">
+            <a href="index.html">← Volver al Inicio</a>
+            <a href="historial.html">- Historial</a>
+            <a href="estadistica.html">- Estadísticas</a>
+            <a href="graficos.html">- Gráficos (Hucha)</a>
+            <a href="#" style="font-weight: bold; border-left: 3px solid #000;">- Dashboard IA</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <button class="btn-menu" onclick="alternarMenu()">&#9776;</button>
+        <div class="container">
+            <header>
+                <h1>🚀 Kibo Financial Dashboard</h1>
+                <button class="btn-action" id="btnSimular" onclick="simularEvento()">Simular Gasto Crítico</button>
+            </header>
+            <div class="grid">
+                <div class="card">
+                    <h2>Salud Financiera</h2>
+                    <div id="creditScore" class="score-value">850</div>
+                    <div id="scoreMessage" class="msg-good">Salud excelente</div>
+                </div>
+                <div class="card">
+                    <h2>Distribución de Gastos</h2>
+                    <canvas id="categoryChart"></canvas>
+                </div>
+                <div class="card">
+                    <h2>Tendencia Semanal</h2>
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="../Apis/dashboard.js"></script>
+
+    <script>
+        function alternarMenu() {
+            const sidebar = document.getElementById('miSidebar');
+            if(sidebar) sidebar.classList.toggle('cerrado');
+        }
+
+        // Configuración visual de respaldo para los gráficos
+        const colors = { purple: '#7986cb', red: '#ef5350', yellow: '#ffca28' };
+        
+        // 🟢 BACKEND: Busca donde dice 'data: [...]' dentro de la configuración de Chart.js
+// y sustituye esos números fijos por los arrays (listas de números) reales de la BBDD.
+        // Simulación visual rápida (el script dashboard.js hará la carga real)
+        function simularEvento() {
+            document.getElementById('creditScore').innerText = "420";
+            document.getElementById('creditScore').style.color = colors.red;
+            const msg = document.getElementById('scoreMessage');
+            msg.innerText = "¡Atención! Gasto crítico detectado";
+            msg.className = "msg-bad";
+            alert("Simulación activada.");
+        }
+    </script>
+</body>
+</html>
