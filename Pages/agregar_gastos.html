@@ -2,44 +2,148 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Kibo - Agregar Gasto</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kibo - Nuevo Gasto IA</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #e0e0e0; display: flex; justify-content: center; padding-top: 50px; }
-        .form-card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 350px; }
-        input, select, button { width: 100%; padding: 10px; margin-top: 10px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; }
-        button { background-color: #7986cb; color: white; border: none; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #5c6bc0; }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5; margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .container {
+            background-color: #fff; padding: 30px; border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1); width: 100%; max-width: 450px;
+        }
+
+        h2 { text-align: center; color: #333; margin-bottom: 25px; }
+
+        /* ESTILOS DEL BOTÓN DE CÁMARA */
+        .upload-container { margin-bottom: 25px; text-align: center; }
+
+        /* Escondemos el input real porque es feo */
+        #ticketInput { display: none; }
+
+        /* Creamos un botón bonito que actúa como el input */
+        .camera-btn {
+            background: linear-gradient(135deg, #7986cb, #5c6bc0);
+            color: white; padding: 15px 25px; border-radius: 30px;
+            cursor: pointer; display: inline-flex; align-items: center;
+            font-weight: bold; transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 10px rgba(121, 134, 203, 0.3);
+        }
+        .camera-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(121, 134, 203, 0.5); }
+        .camera-btn span { margin-left: 10px; font-size: 18px; }
+
+        /* Área de previsualización de la imagen */
+        #preview-container {
+            display: none; /* Se oculta hasta que haya foto */
+            margin-top: 20px; text-align: center;
+        }
+        #image-preview {
+            max-width: 100%; max-height: 300px; border-radius: 12px;
+            border: 3px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        #loading-message { color: #7986cb; font-weight: bold; margin-top: 10px; display: none; }
+
+        /* Estilos del formulario normal */
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
+        input, select {
+            width: 100%; padding: 12px; border: 2px solid #eee;
+            border-radius: 8px; box-sizing: border-box; font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus { border-color: #7986cb; outline: none; }
+
+        .btn-submit {
+            width: 100%; padding: 15px; border: none; border-radius: 10px;
+            background-color: #2e7d32; color: white; font-size: 18px;
+            font-weight: bold; cursor: pointer; transition: background-color 0.3s;
+        }
+        .btn-submit:hover { background-color: #1b5e20; }
+        .btn-back { display: block; text-align: center; margin-top: 20px; text-decoration: none; color: #777; }
     </style>
 </head>
 <body>
-<div class="form-card">
-    <h2>Nuevo Movimiento</h2>
-    <form action="../Back/procesar_gasto.php" method="POST">
-        <label>Concepto:</label>
-        <input type="text" name="concepto" placeholder="Ej. Cena con amigos" required>
 
-        <label>Precio (€):</label>
-        <input type="number" step="0.01" name="precio" placeholder="0.00" required>
+<div class="container">
+    <h2>📝 Registrar Nuevo Gasto</h2>
 
-        <label>Categoría:</label>
-        <select name="categoria">
-            <option value="Ocio">Ocio</option>
-            <option value="Comida">Comida</option>
-            <option value="Transporte">Transporte</option>
-            <option value="Vivienda">Vivienda</option>
-            <option value="Otros">Otros</option>
-        </select>
+    <div class="upload-container">
+        <input type="file" id="ticketInput" accept="image/*" capture="environment">
 
-        <label>Tipo:</label>
-        <select name="tipo">
-            <option value="gasto">Gasto (-)</option>
-            <option value="ingreso">Ingreso (+)</option>
-        </select>
+        <label for="ticketInput" class="camera-btn">
+            📷 <span>Escanear Ticket con IA</span>
+        </label>
 
-        <button type="submit">Guardar Movimiento</button>
+        <div id="preview-container">
+            <img id="image-preview" alt="Previsualización del ticket">
+            <p id="loading-message">✨ Kibo está leyendo el ticket...</p>
+        </div>
+    </div>
+
+    <form id="gastoForm">
+        <div class="form-group">
+            <label for="concepto">Concepto:</label>
+            <input type="text" id="concepto" name="concepto" placeholder="Ej: Compra Mercadona" required>
+        </div>
+
+        <div class="form-group">
+            <label for="cantidad">Precio (€):</label>
+            <input type="number" id="cantidad" name="cantidad" step="0.01" placeholder="0.00" required>
+        </div>
+
+        <div class="form-group">
+            <label for="categoria">Categoría:</label>
+            <select id="categoria" name="categoria" required>
+                <option value="Comida">🍔 Comida</option>
+                <option value="Ocio">🎉 Ocio</option>
+                <option value="Transporte">🚌 Transporte</option>
+                <option value="Hogar">🏠 Hogar</option>
+                <option value="Otros">📦 Otros</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha" name="fecha" required>
+        </div>
+
+        <button type="submit" class="btn-submit">Guardar Gasto</button>
     </form>
-    <br>
-    <a href="index.html" style="text-decoration: none; color: #777; font-size: 14px;">← Volver</a>
+
+    <a href="index.html" class="btn-back">Cancelar y volver</a>
 </div>
+
+<script>
+    // Ponemos la fecha de hoy por defecto
+    document.getElementById('fecha').valueAsDate = new Date();
+
+    document.getElementById('ticketInput').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            // 1. Mostrar la imagen en la pantalla
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('image-preview').src = e.target.result;
+                document.getElementById('preview-container').style.display = 'block';
+
+                // AQUÍ ES DONDE LLAMAREMOS A GROQ MÁS ADELANTE
+                // console.log("Imagen lista para enviar a la IA...");
+                // procesarImagenConGroq(file);
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // (Opcional) Script para enviar el formulario con fetch como hablamos antes
+    document.getElementById('gastoForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        // ... Lógica de envío a procesar_gasto.php (la haremos después)
+        alert("Gasto guardado manualmente (Simulación)");
+    });
+</script>
+
 </body>
 </html>
