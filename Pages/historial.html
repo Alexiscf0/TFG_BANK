@@ -68,17 +68,67 @@
         </thead>
         
         <!-- CHAVAL Aqui entre los dos TBODY -->
-        <tbody id="tabla-movimientos-body"> 
+        <tbody id="tabla-movimientos-body">
+
             </tbody>
     </table>
 </div>
         </div>
     </main>
-
-    <script>
-        function alternarMenu() {
-            document.getElementById('miSidebar').classList.toggle('cerrado');
-        }
-    </script>
 </body>
+
+<script>
+    function alternarMenu() {
+        document.getElementById('miSidebar').classList.toggle('cerrado');
+    }
+
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        const tablaBody = document.getElementById('tabla-movimientos-body');
+
+        try {
+            // Llamada al PHP que ya filtra por sesión
+            const response = await fetch('../Back/movimientos.php');
+            const datos = await response.json();
+
+            if (datos.status === "error") {
+                // Si el error es de sesión, redirigir al login
+                if(datos.message === "Sesión no iniciada") {
+                    window.location.href = "login.html";
+                }
+                tablaBody.innerHTML = `<tr><td colspan="4">Error: ${datos.message}</td></tr>`;
+                return;
+            }
+
+            tablaBody.innerHTML = ''; // Limpiar carga
+
+            if (datos.length === 0) {
+                tablaBody.innerHTML = `<tr><td colspan="4">No tienes movimientos registrados.</td></tr>`;
+                return;
+            }
+
+            datos.forEach(mov => {
+                const tr = document.createElement('tr');
+                const monto = parseFloat(mov.cantidad);
+                const claseMonto = monto >= 0 ? 'monto-positivo' : 'monto-negativo';
+
+                tr.innerHTML = `
+                <td>${mov.fecha}</td>
+                <td>${mov.concepto}</td>
+                <td><span class="tag">${mov.categoria}</span></td>
+                <td class="${claseMonto}">${monto.toFixed(2)}€</td>
+            `;
+                tablaBody.appendChild(tr);
+            });
+
+        } catch (error) {
+            console.error("Error:", error);
+            tablaBody.innerHTML = `<tr><td colspan="4">Error al conectar con el servidor.</td></tr>`;
+        }
+    });
+
+    function alternarMenu() {
+        document.getElementById('miSidebar').classList.toggle('cerrado');
+    }
+</script>
 </html>

@@ -22,7 +22,7 @@
 </body>
 <script>
     document.querySelector('form').addEventListener('submit', async (e) => {
-        e.preventDefault(); // Evita que la página se recargue
+        e.preventDefault();
 
         const form = e.target;
         const formData = new FormData(form);
@@ -33,17 +33,20 @@
                 body: formData
             });
 
+            // Verificamos si la respuesta es exitosa (status 200-299)
+            if (!response.ok) throw new Error("Error en el servidor");
+
             const result = await response.json();
 
             if (result.status === "success") {
                 alert(result.message);
-                window.location.href = result.redirect; // Redirige si todo salió bien
+                window.location.href = result.redirect;
             } else {
-                alert("Error: " + result.message);
+                alert(result.message);
             }
         } catch (error) {
-            console.error("Error en la petición:", error);
-            alert("Ocurrió un error al conectar con el servidor.");
+            console.error("Error:", error);
+            alert("No se pudo completar el registro. Inténtalo más tarde.");
         }
     });
 </script>
