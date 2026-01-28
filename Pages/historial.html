@@ -32,6 +32,38 @@
         .monto-positivo { color: green; font-weight: bold; }
         .monto-negativo { color: #d32f2f; font-weight: bold; }
         .tag { font-size: 12px; padding: 4px 8px; border-radius: 12px; background-color: #e0e0e0; color: #555; }
+        /* Estilos para el contenedor del filtro */
+        .page-header select {
+            padding: 10px 15px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+            color: #333;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            min-width: 200px;
+        }
+
+        /* Efecto al pasar el ratón o hacer click */
+        .page-header select:hover {
+            border-color: #7986cb;
+        }
+
+        .page-header select:focus {
+            border-color: #7986cb;
+            box-shadow: 0 0 5px rgba(121, 134, 203, 0.5);
+        }
+
+        /* Ajuste para que el encabezado no se amontone en móviles */
+        @media (max-width: 600px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -50,10 +82,19 @@
     <main class="main-content">
         <button class="btn-menu" onclick="alternarMenu()">&#9776;</button>
 
-        <div class="page-header">
-            <h1>Registro de Movimientos</h1>
-            <button class="btn-purple">Filtrar por fecha</button>
-        </div>
+
+            <div class="page-header">
+                <h1>Historial de Movimientos</h1>
+
+                <select id="filtroCategoria" class="filtro-select">
+                    <option value="Todas">📂 Todas las categorías</option>
+                    <option value="Comida">🍽️ Comida</option>
+                    <option value="Ocio">🎮 Ocio</option>
+                    <option value="Transporte">🚗 Transporte</option>
+                    <option value="Vivienda">🏠 Vivienda</option>
+                    <option value="Otros">📦 Otros</option>
+                </select>
+            </div>
 
         <div class="table-container">
             <div class="table-container">
@@ -78,21 +119,21 @@
 </body>
 
 <script>
+    let todosLosMovimientos = []; // Variable global para guardar los datos originales
+
     function alternarMenu() {
         document.getElementById('miSidebar').classList.toggle('cerrado');
     }
 
-
     document.addEventListener('DOMContentLoaded', async () => {
         const tablaBody = document.getElementById('tabla-movimientos-body');
+        const filtroSelect = document.getElementById('filtroCategoria');
 
         try {
-            // Llamada al PHP que ya filtra por sesión
             const response = await fetch('../Back/movimientos.php');
             const datos = await response.json();
 
             if (datos.status === "error") {
-                // Si el error es de sesión, redirigir al login
                 if(datos.message === "Sesión no iniciada") {
                     window.location.href = "login.html";
                 }
@@ -100,25 +141,22 @@
                 return;
             }
 
-            tablaBody.innerHTML = ''; // Limpiar carga
+            // Guardamos los datos para filtrar sin recargar la página
+            todosLosMovimientos = datos;
 
-            if (datos.length === 0) {
-                tablaBody.innerHTML = `<tr><td colspan="4">No tienes movimientos registrados.</td></tr>`;
-                return;
-            }
+            // Mostramos todos al inicio
+            renderizarTabla(todosLosMovimientos);
 
-            datos.forEach(mov => {
-                const tr = document.createElement('tr');
-                const monto = parseFloat(mov.cantidad);
-                const claseMonto = monto >= 0 ? 'monto-positivo' : 'monto-negativo';
+            // Escuchamos el cambio en el select
+            filtroSelect.addEventListener('change', () => {
+                const categoriaSeleccionada = filtroSelect.value;
 
-                tr.innerHTML = `
-                <td>${mov.fecha}</td>
-                <td>${mov.concepto}</td>
-                <td><span class="tag">${mov.categoria}</span></td>
-                <td class="${claseMonto}">${monto.toFixed(2)}€</td>
-            `;
-                tablaBody.appendChild(tr);
+                if (categoriaSeleccionada === "Todas") {
+                    renderizarTabla(todosLosMovimientos);
+                } else {
+                    const filtrados = todosLosMovimientos.filter(mov => mov.categoria === categoriaSeleccionada);
+                    renderizarTabla(filtrados);
+                }
             });
 
         } catch (error) {
@@ -127,8 +165,48 @@
         }
     });
 
+    // Función para pintar las filas en la tabla
+    function renderizarTabla(lista) {
+        const tablaBody = document.getElementById('tabla-movimientos-body');
+        tablaBody.innerHTML = '';
+
+        if (lista.length === 0) {
+            tablaBody.innerHTML = `<tr><td colspan="4">No hay movimientos registrados.</td></tr>`;
+            return;
+        }
+
+        lista.forEach(mov => {
+            const tr = document.createElement('tr');
+
+            // Convertimos a número decimal
+            let monto = parseFloat(mov.cantidad);
+
+            // Lógica de signo: Si el tipo es 'gasto', lo ponemos en negativo
+            // Si es 'ingreso', lo dejamos positivo
+            const esGasto = mov.tipo === 'gasto';
+            if (esGasto && monto > 0) {
+                monto = -monto;
+            } else if (!esGasto && monto < 0) {
+                monto = Math.abs(monto); // Asegurar que sea positivo si es ingreso
+            }
+
+            const claseMonto = monto >= 0 ? 'monto-positivo' : 'monto-negativo';
+            const simbolo = monto >= 0 ? '+' : ''; // El '-' ya viene incluido en el número negativo
+
+            tr.innerHTML = `
+            <td>${mov.fecha}</td>
+            <td>${mov.concepto}</td>
+            <td><span class="tag">${mov.categoria}</span></td>
+            <td class="${claseMonto}">${simbolo}${monto.toFixed(2)}€</td>
+        `;
+            tablaBody.appendChild(tr);
+        });
+    }
+
     function alternarMenu() {
         document.getElementById('miSidebar').classList.toggle('cerrado');
     }
+
+
 </script>
 </html>

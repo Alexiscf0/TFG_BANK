@@ -33,8 +33,8 @@ try {
             "fecha"     => $doc['fecha'] ?? 'N/A',
             "concepto"  => $doc['concepto'] ?? 'Sin descripción',
             "categoria" => $doc['categoria'] ?? 'General',
-            // 4. MAPEO CORREGIDO: En tu DB el campo se llama 'precio'
-            "cantidad"  => $doc['precio'] ?? 0
+            "cantidad"  => $doc['precio'] ?? 0,
+            "tipo"      => $doc['tipo'] ?? 'gasto' // IMPORTANTE: Enviamos el tipo al frontend
         ];
     }
 
