@@ -1,11 +1,11 @@
-// C:\xampp\htdocs\Kibo\Api\groq_service.js
 import { api_groq } from './api_config.js';
 
 export async function analizarTicket(imagenBase64) {
     console.log("Iniciando Kibo Vision 2026 (Llama 4)...");
 
+    // CORREGIDO: Pedimos 'precio' en lugar de 'cantidad'
     const prompt = `Analiza este ticket. Devuelve EXCLUSIVAMENTE un JSON con: 
-    "concepto" (nombre tienda), "cantidad" (número decimal con punto), "categoria" (Comida, Ocio, Transporte, Hogar, Otros), "fecha" (YYYY-MM-DD).`;
+    "concepto" (nombre tienda), "precio" (número decimal con punto), "categoria" (Comida, Ocio, Transporte, Hogar, Otros), "fecha" (YYYY-MM-DD).`;
 
     try {
         const response = await fetch(api_groq.url, {
@@ -15,8 +15,7 @@ export async function analizarTicket(imagenBase64) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                // Este es el ID de modelo oficial para visión en 2026
-                model: "meta-llama/llama-4-scout-17b-16e-instruct",
+                model: api_groq.modelo,
                 messages: [
                     {
                         role: "user",
@@ -32,14 +31,9 @@ export async function analizarTicket(imagenBase64) {
         });
 
         const data = await response.json();
-
-        if (data.error) {
-            throw new Error(`Error de Groq: ${data.error.message}`);
-        }
+        if (data.error) throw new Error(`Error de Groq: ${data.error.message}`);
 
         let content = data.choices[0].message.content;
-
-        // Limpiamos etiquetas de bloque de código si la IA las pone
         content = content.replace(/```json/g, "").replace(/```/g, "").trim();
 
         const inicio = content.indexOf('{');
