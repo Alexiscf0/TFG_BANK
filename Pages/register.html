@@ -20,4 +20,31 @@
 
 <p>¿Ya tienes cuenta? <a href="../Pages/login.html">Inicia Sesión</a></p>
 </body>
+<script>
+    document.querySelector('form').addEventListener('submit', async (e) => {
+        e.preventDefault(); // Evita que la página se recargue
+
+        const form = e.target;
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.status === "success") {
+                alert(result.message);
+                window.location.href = result.redirect; // Redirige si todo salió bien
+            } else {
+                alert("Error: " + result.message);
+            }
+        } catch (error) {
+            console.error("Error en la petición:", error);
+            alert("Ocurrió un error al conectar con el servidor.");
+        }
+    });
+</script>
 </html>

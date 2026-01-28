@@ -1,7 +1,10 @@
 <?php
+header('Content-Type: application/json'); // Indicamos que devolvemos JSON
 require 'C:/xampp/htdocs/Kibo/vendor/autoload.php';
 use MongoDB\Client;
 session_start();
+
+$response = ["status" => "error", "message" => "Método no permitido"];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $emailInput = trim($_POST['email'] ?? '');
@@ -14,24 +17,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $usuario = $collection->findOne(['email' => $emailInput]);
 
         if ($usuario) {
-            // Verificamos el hash
             if (password_verify($passInput, $usuario['password'])) {
                 $_SESSION['user_email'] = $usuario['email'];
-                header("Location: ../Pages/index.html");
-                exit();
+                $response = [
+                    "status" => "success",
+                    "message" => "Login correcto",
+                    "redirect" => "../Pages/index.html"
+                ];
             } else {
-                // ESTO TE AYUDARÁ A SABER QUÉ PASA:
-                echo "<h3>Error de validación</h3>";
-                echo "Contraseña escrita: " . htmlspecialchars($passInput) . "<br>";
-                echo "Hash en la Base de Datos: " . $usuario['password'] . "<br>";
-                echo "<p>Si el Hash de arriba no empieza por '$2y$10$', el registro está mal hecho.</p>";
-                echo "<a href='../Pages/login.html'>Volver</a>";
+                $response["message"] = "Contraseña incorrecta.";
             }
         } else {
-            echo "El usuario no existe. <a href='../Pages/register.html'>Regístrate</a>";
+            $response["message"] = "El usuario no existe.";
         }
     } catch (Exception $e) {
-        die("Error: " . $e->getMessage());
+        $response["message"] = "Error de servidor: " . $e->getMessage();
     }
 }
-?>
+
+echo json_encode($response);
+exit();
