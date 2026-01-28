@@ -1,43 +1,48 @@
 <?php
-require 'C:/xampp/htdocs/Kibo/vendor/autoload.php';
-use MongoDB\Client;
+// Back/procesar_gasto.php
 session_start();
+header('Content-Type: application/json');
+require_once __DIR__ . '/../vendor/autoload.php';
+use MongoDB\Client;
 
-// 1. Seguridad: Verificar si hay un usuario conectado
+// Comprobamos si hay un usuario logueado
 if (!isset($_SESSION['user_email'])) {
-    die("Error: Debes iniciar sesión para registrar datos. <a href='../Pages/login.html'>Ir al Login</a>");
+    echo json_encode(["status" => "error", "message" => "Sesión no iniciada"]);
+    exit;
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // 2. Capturar datos del formulario
-    $emailUsuario = $_SESSION['user_email']; // Identificador del dueño
-    $concepto = trim($_POST['concepto']);
-    $precio = (float)$_POST['precio'];
-    $categoria = $_POST['categoria'];
-    $tipo = $_POST['tipo'];
+try {
+    // Conexión a tu MongoDB Atlas
+    $uri = "mongodb+srv://alexiscastelln_db_user:LOLOKRIKO@cluster0.zfxempk.mongodb.net/?appName=Cluster0";
+    $client = new Client($uri);
+    $collection = $client->KIBO->movimientos;
 
-    try {
-        // 3. Conexión a tu Atlas (usando tus credenciales)
-        $client = new Client("mongodb+srv://alexiscastelln_db_user:LOLOKRIKO@cluster0.zfxempk.mongodb.net/?appName=Cluster0");
-        $collection = $client->KIBO->movimientos; // Nueva colección para gastos
+    // Recogemos los datos del formulario
+    $concepto  = $_POST['concepto']  ?? 'Sin concepto';
+    $precio    = (float)($_POST['precio'] ?? 0);
+    $categoria = $_POST['categoria'] ?? 'Otros';
+    $fecha     = $_POST['fecha']     ?? date("Y-m-d");
+    $email     = $_SESSION['user_email'];
 
-        // 4. Insertar documento con la "marca" del usuario
-        $resultado = $collection->insertOne([
-            "user_email" => $emailUsuario,
-            "concepto"   => $concepto,
-            "precio"     => $precio,
-            "categoria"  => $categoria,
-            "tipo"       => $tipo,
-            "fecha"      => date("Y-m-d H:i:s")
-        ]);
+    // Preparamos el documento con los campos que requiere el Dashboard
+    $documento = [
+        "user_email" => $email,
+        "concepto"   => $concepto,
+        "precio"     => $precio,
+        "categoria"  => $categoria,
+        "fecha"      => $fecha,
+        "tipo"       => "gasto", // Fundamental para que el Dashboard lo sume como gasto
+        "fecha_creacion" => date("Y-m-d H:i:s")
+    ];
 
-        if ($resultado->getInsertedCount() > 0) {
-            header("Location: ../Pages/historial.html?success=1");
-            exit();
-        }
+    $resultado = $collection->insertOne($documento);
 
-    } catch (Exception $e) {
-        die("Error al guardar en MongoDB: " . $e->getMessage());
+    if ($resultado->getInsertedCount() > 0) {
+        echo json_encode(["status" => "success", "message" => "Guardado en Atlas"]);
+    } else {
+        echo json_encode(["status" => "error", "message" => "No se pudo insertar en la BD"]);
     }
+
+} catch (Exception $e) {
+    echo json_encode(["status" => "error", "message" => "Error de BD: " . $e->getMessage()]);
 }
-?>

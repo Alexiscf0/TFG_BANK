@@ -14,7 +14,8 @@ export const api_algoan = {
 export const api_groq = {
     key: "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",
     url: "https://api.groq.com/openai/v1/chat/completions",
-    modelo: "llama-3.2-11b-vision-preview"
+    // CAMBIAMOS EL MODELO AQUÍ:
+    modelo: "meta-llama/llama-4-scout-17b-16e-instruct"
 };
 
 // 3. CONFIGURACIÓN DE MONGODB (Base de datos)
