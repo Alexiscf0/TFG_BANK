@@ -1,93 +1,124 @@
-// dashboard.js
-import { fetchBankingData, getMockBankingData } from './algoan_service.js';
+import { getMockBankingData } from './algoan_service.js';
 
-let chartCategorias;
-let chartHistorial;
+let chartGastos, chartIngresos, chartComparativa;
 
-// 1. Inicializar gráficas con estados de carga
 function inicializarGraficas() {
-    const ctxCat = document.getElementById('categoryChart').getContext('2d');
-    chartCategorias = new Chart(ctxCat, {
+    // 1. Gráfico de Gastos (Doughnut)
+    chartGastos = new Chart(document.getElementById('categoryChart'), {
         type: 'doughnut',
-        data: { labels: ['Cargando...'], datasets: [{ data: [1], backgroundColor: ['#dfe6e9'] }] }
+        options: { responsive: true, maintainAspectRatio: false }
     });
 
-    const ctxHist = document.getElementById('weeklyChart').getContext('2d');
-    chartHistorial = new Chart(ctxHist, {
+    // 2. Gráfico de Ingresos (Doughnut)
+    chartIngresos = new Chart(document.getElementById('incomeCategoryChart'), {
+        type: 'doughnut',
+        options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    // 3. Gráfico Comparativo de Líneas (Ingresos vs Gastos)
+    chartComparativa = new Chart(document.getElementById('weeklyChart'), {
         type: 'line',
         data: {
             labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
-            datasets: [{
-                label: 'Gasto (€)',
-                data: [0, 0, 0, 0, 0, 0, 0],
-                borderColor: '#00b894',
-                backgroundColor: 'rgba(0, 184, 148, 0.1)',
-                fill: true,
-                tension: 0.4
-            }]
-        }
+            datasets: [
+                {
+                    label: 'Gastos (€)',
+                    borderColor: '#ef5350',
+                    backgroundColor: 'rgba(239, 83, 80, 0.1)',
+                    fill: true, tension: 0.4, data: [0,0,0,0,0,0,0]
+                },
+                {
+                    label: 'Ingresos (€)',
+                    borderColor: '#66bb6a',
+                    backgroundColor: 'rgba(102, 187, 106, 0.1)',
+                    fill: true, tension: 0.4, data: [0,0,0,0,0,0,0]
+                }
+            ]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
     });
 }
 
-// 2. Lógica para los consejos de Salud Financiera
-function actualizarConsejo(score) {
-    const msgBox = document.getElementById('scoreMessage');
-    if (score >= 700) {
-        msgBox.innerText = "¡Excelente! Estás gestionando tus finanzas como un experto.";
-        msgBox.className = "msg-good";
-    } else if (score >= 500) {
-        msgBox.innerText = "Buen trabajo, pero intenta reducir gastos hormiga este mes.";
-        msgBox.className = "msg-mid";
-    } else {
-        msgBox.innerText = "Atención: Tus gastos superan el límite recomendado. ¡Ahorra!";
-        msgBox.className = "msg-bad";
-    }
-}
-
-// 3. Actualizar toda la interfaz
 function actualizarInterfaz(data) {
-    const scoreVal = data.score || 650;
-    document.getElementById('creditScore').innerHTML = `${scoreVal} <span class="label">Puntos</span>`;
+    const scoreVal = data.score || 500;
+    const scoreElement = document.getElementById('creditScore');
+    const msgBox = document.getElementById('scoreMessage');
 
-    actualizarConsejo(scoreVal);
+    scoreElement.innerText = scoreVal;
+
+    // Lógica de colores y mensajes para el Score
+    if (scoreVal >= 700) {
+        msgBox.innerText = "Salud excelente";
+        msgBox.className = "msg-good";
+        scoreElement.style.color = "#7986cb";
+    } else if (scoreVal >= 450) {
+        msgBox.innerText = "Salud estable";
+        msgBox.className = "msg-good";
+        scoreElement.style.color = "#ffa726";
+    } else {
+        msgBox.innerText = "Salud crítica";
+        msgBox.className = "msg-bad";
+        scoreElement.style.color = "#ef5350";
+    }
 
     if (data.analysis && data.analysis.details) {
-        // Actualizar Quesito
-        const cats = data.analysis.details.category_distribution;
-        chartCategorias.data.labels = Object.keys(cats);
-        chartCategorias.data.datasets[0].data = Object.values(cats);
-        chartCategorias.data.datasets[0].backgroundColor = ['#55efc4', '#81ecec', '#74b9ff', '#a29bfe', '#ff7675'];
-        chartCategorias.update();
+        const d = data.analysis.details;
 
-        // Actualizar Historial
-        chartHistorial.data.datasets[0].data = data.analysis.details.weekly_trend || [0,0,0,0,0,0,0];
-        chartHistorial.update();
+        // Actualizar Gráfico Gastos
+        const catG = Object.keys(d.expense_categories);
+        chartGastos.data.labels = catG.length ? catG : ["Sin datos"];
+        chartGastos.data.datasets = [{
+            data: catG.length ? Object.values(d.expense_categories) : [1],
+            backgroundColor: ['#ef5350', '#ffa726', '#a29bfe', '#74b9ff']
+        }];
+        chartGastos.update();
+
+        // Actualizar Gráfico Ingresos
+        const catI = Object.keys(d.income_categories);
+        chartIngresos.data.labels = catI.length ? catI : ["Sin datos"];
+        chartIngresos.data.datasets = [{
+            data: catI.length ? Object.values(d.income_categories) : [1],
+            backgroundColor: ['#66bb6a', '#43a047', '#2e7d32', '#81ecec']
+        }];
+        chartIngresos.update();
+
+        // Actualizar Comparativa Semanal
+        chartComparativa.data.datasets[0].data = d.expense_trend;
+        chartComparativa.data.datasets[1].data = d.income_trend;
+        chartComparativa.update();
     }
 }
 
-// 4. Arranque de la app
 async function arranque() {
     inicializarGraficas();
     try {
-        let datos = await fetchBankingData();
-        if (!datos || !datos.analysis) datos = getMockBankingData();
-        actualizarInterfaz(datos);
-    } catch (e) { actualizarInterfaz(getMockBankingData()); }
+        const response = await fetch('../Back/get_dashboard_data.php');
+        const result = await response.json();
+
+        if (result.status === "success") {
+            actualizarInterfaz(result);
+        } else if (result.message === "Sesión no iniciada") {
+            window.location.href = "login.html";
+        }
+    } catch (e) {
+        console.error("Error al cargar datos reales:", e);
+        actualizarInterfaz(getMockBankingData());
+    }
 }
 
 window.onload = arranque;
 
-// Botón de simulación para la demo del TFG
 document.getElementById('btnSimular').addEventListener('click', () => {
-    // Simulamos un gasto grande que baja la salud financiera
-    actualizarInterfaz({
-        score: 420,
+    const sim = {
+        score: 350,
         analysis: {
             details: {
-                category_distribution: { "Deudas": 600, "Ocio": 400 },
-                weekly_trend: [200, 300, 450, 100, 50, 800, 900]
+                expense_categories: { "Deudas": 400, "Vicios": 200 },
+                income_categories: { "Nómina": 800 },
+                expense_trend: [100, 200, 800, 300, 150, 400, 900],
+                income_trend: [0, 0, 800, 0, 0, 0, 0]
             }
         }
-    });
-    alert("Demo: Se ha registrado un gasto excesivo. Observa cómo cambia el mensaje de salud.");
+    };
+    actualizarInterfaz(sim);
 });
