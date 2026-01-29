@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Admin</title>
+    <script>
+        // PROTECCIÓN DE RUTA: Solo permite la entrada a administradores
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('../Back/comprobar_rol.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.logged_in || data.role !== 'admin') {
+                        // Si no es admin, fuera de aquí
+                        window.location.replace('login.html');
+                    } else {
+                        // Si es admin, mostramos el cuerpo de la página
+                        document.body.style.display = 'block';
+                    }
+                })
+                .catch(() => window.location.replace('login.html'));
+        });
+    </script>
+</head>
+<body style="display: none;"> <h1>¡ENTRASTE COMO ADMIN! (Archivo HTML)</h1>
+<p>Este panel ahora es un archivo .html protegido por JS.</p>
+<a href="index.html">Volver al inicio</a>
+</body>
+</html>

@@ -14,22 +14,26 @@ try {
     $response = ["status" => "error", "message" => "Error interno"];
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $username = trim($_POST['username'] ?? '');
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
 
-        if (empty($email) || empty($password)) {
+        if (empty($username) || empty($email) || empty($password)) {
             $response["message"] = "Todos los campos son obligatorios.";
         } else {
-            $uri = "mongodb+srv://alexiscastelln_db_user:LOLOKRIKO@cluster0.zfxempk.mongodb.net/?appName=Cluster0";
+            // Verificamos si el EMAIL O el USERNAME ya existen
+            $existeUsuario = $collection->findOne([
+                '$or' => [
+                    ['email' => $email],
+                    ['username' => $username]
+                ]
+            ]);
 
-            // Conexión con bypass de TLS para evitar problemas de certificados en Windows
-            $client = new Client($uri, [], ["tlsInsecure" => true]);
-            $collection = $client->KIBO->datos;
-
-            if ($collection->findOne(['email' => $email])) {
-                $response["message"] = "Este correo ya está registrado.";
+            if ($existeUsuario) {
+                $response["message"] = "El correo o el nombre de usuario ya están registrados.";
             } else {
                 $collection->insertOne([
+                    "username" => $username, // Guardamos el nuevo campo
                     "email" => $email,
                     "password" => password_hash($password, PASSWORD_BCRYPT),
                     "fecha_creacion" => date("Y-m-d H:i:s")

@@ -7,19 +7,17 @@ session_start();
 $response = ["status" => "error", "message" => "Ocurrió un error"];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $emailInput = trim($_POST['email'] ?? '');
+    $userInput = trim($_POST['username'] ?? ''); // Cambiado de email a username
     $passInput = $_POST['password'] ?? '';
 
     try {
-        $client = new Client("mongodb+srv://alexiscastelln_db_user:LOLOKRIKO@cluster0.zfxempk.mongodb.net/?appName=Cluster0");
-        $collection = $client->KIBO->datos;
-
-        $usuario = $collection->findOne(['email' => $emailInput]);
+        // ... conexión ...
+        $usuario = $collection->findOne(['username' => $userInput]); // Buscar por usuario
 
         if ($usuario) {
             if (password_verify($passInput, $usuario['password'])) {
-
                 $_SESSION['user_email'] = (string)$usuario['email'];
+                $_SESSION['username'] = (string)$usuario['username']; // Guardamos también el nombre en sesión
                 $_SESSION['role'] = isset($usuario['role']) ? (string)$usuario['role'] : 'user';
 
                 // Respuesta indicando si es admin o no
