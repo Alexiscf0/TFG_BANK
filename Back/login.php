@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json'); // Indicamos que devolvemos JSON
-require_once __DIR__ . '/../vendor/autoload.php';
+require 'C:/xampp/htdocs/Kibo/vendor/autoload.php';
 use MongoDB\Client;
 session_start();
 
