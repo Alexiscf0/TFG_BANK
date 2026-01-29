@@ -3,139 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movimientos - Kibo App</title>
+    <title>Historial - Kibo App</title>
     <style>
+        /* --- VARIABLES Y CONFIGURACIÓN BASE --- */
+        :root {
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --accent: #7986cb;
+            --accent-light: #e8eaf6;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --sidebar-width: 260px;
+            --sidebar-bg: #ffffff;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* Evitamos el scroll en el cuerpo para que la app se sienta fija */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             height: 100vh;
             display: flex;
-            background-color: #e0e0e0;
+            background-color: var(--bg);
             overflow: hidden;
+            color: var(--text-main);
         }
 
-        /* BARRA LATERAL */
-        .sidebar {
-            width: 250px; background-color: #7f7f7f; padding: 20px;
-            display: flex; flex-direction: column; color: #000;
-            flex-shrink: 0; transition: width 0.3s ease, padding 0.3s ease;
-            overflow: hidden; white-space: nowrap;
+        /* --- SIDEBAR ESTILO MODERNO --- */
+        .sidebar { 
+            width: var(--sidebar-width); 
+            background-color: var(--sidebar-bg); 
+            display: flex; 
+            flex-direction: column; 
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); 
+            padding: 20px 15px; 
+            border-right: 1px solid rgba(0,0,0,0.05); 
+            flex-shrink: 0;
+            z-index: 100;
         }
-        .sidebar.cerrado { width: 0; padding: 20px 0; border: none; }
 
-        .menu-items { flex-grow: 1; display: flex; flex-direction: column; }
-        .menu-items a {
-            display: block; text-decoration: none; color: black;
-            font-size: 18px; margin-bottom: 20px; padding-left: 10px;
-            border-left: 3px solid transparent;
+        .sidebar.cerrado { width: 0; padding: 20px 0; opacity: 0; overflow: hidden; }
+
+        .brand {
+            font-size: 22px; font-weight: 700; color: var(--accent);
+            margin-bottom: 30px; padding-left: 10px; display: flex; align-items: center; gap: 12px;
         }
-        .menu-items a:hover { font-weight: bold; border-left: 3px solid #000; }
+        .brand img { height: 32px; width: auto; object-fit: contain; }
 
-        /* CONTENIDO PRINCIPAL */
+        .menu-items { display: flex; flex-direction: column; gap: 5px; flex-grow: 1; }
+
+        .menu-items a { 
+            display: flex; align-items: center; text-decoration: none; 
+            color: var(--text-muted); font-size: 15px; font-weight: 500;
+            padding: 12px 15px; border-radius: 50px; 
+            transition: all 0.2s ease; white-space: nowrap;
+        }
+
+        .menu-items a svg { width: 20px; height: 20px; margin-right: 12px; fill: currentColor; opacity: 0.7; }
+
+        .menu-items a:hover { background-color: var(--accent-light); color: var(--accent); }
+        
+        /* CLASE PARA EL ENLACE ACTIVO */
+        .menu-items a.activo-page { background-color: var(--accent-light); color: var(--accent); font-weight: 700; }
+
+        #linkAdmin { color: #b71c1c; display: none; margin-top: 10px; background-color: #fff0f0; }
+        #linkAdmin:hover { background-color: #ffebee; }
+
+        .sidebar-footer { margin-top: auto; border-top: 1px solid #eee; padding-top: 15px; }
+        .btn-logout {
+            display: flex; align-items: center; justify-content: center; width: 100%;
+            padding: 12px; background-color: transparent; color: var(--text-muted);
+            border: 1px solid #eee; border-radius: 12px; font-weight: 600; cursor: pointer;
+            transition: 0.3s; text-decoration: none;
+        }
+        .btn-logout:hover { background-color: #ffebee; color: #d32f2f; border-color: #ffcdd2; }
+
+        /* --- CONTENIDO PRINCIPAL --- */
         .main-content {
             flex: 1;
             padding: 30px;
             display: flex;
             flex-direction: column;
             height: 100vh;
-            overflow: hidden; /* Bloqueamos el scroll exterior */
+            overflow: hidden; 
         }
 
-        .btn-menu { align-self: flex-start; font-size: 30px; cursor: pointer; margin-bottom: 20px; background: none; border: none; color: #333; padding: 0; }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-shrink: 0; /* Evita que el cabezal se encoja */
+        .header-top {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 25px; flex-shrink: 0;
         }
-        h1 { font-weight: normal; font-size: 28px; }
 
-        /* CONTENEDOR DE TABLA CON SCROLL INTERNO */
+        .header-left { display: flex; align-items: center; gap: 20px; }
+
+        .btn-menu { 
+            font-size: 24px; cursor: pointer; background: white; border: none; 
+            color: #555; padding: 8px 12px; border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s;
+        }
+        .btn-menu:hover { background: #f5f5f5; }
+
+        h1 { font-size: 1.8rem; color: #222; margin: 0; }
+
+        /* SELECTOR DE FILTRO MODERNO */
+        .filtro-select {
+            padding: 10px 20px; border: 1px solid #ddd; border-radius: 50px;
+            background-color: white; cursor: pointer; min-width: 220px;
+            font-size: 14px; color: #555; outline: none; transition: 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .filtro-select:hover { border-color: var(--accent); }
+
+        /* --- ESTILOS DE LA TABLA --- */
         .table-wrapper {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            overflow: auto; /* Aquí vive el scroll ahora */
-            flex-grow: 1; /* Ocupa todo el espacio sobrante */
+            background-color: var(--card);
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            overflow: auto;
+            flex-grow: 1; 
             margin-bottom: 10px;
+            border: 1px solid rgba(255,255,255,0.5);
         }
 
         table {
-            width: 100%;
-            border-collapse: separate; /* Necesario para que el sticky funcione bien */
-            border-spacing: 0;
-            text-align: left;
-            min-width: 600px;
+            width: 100%; border-collapse: separate; border-spacing: 0;
+            text-align: left; min-width: 600px;
         }
 
-        /* ENCABEZADO FIJO (STICKY) */
+        /* Cabecera Fija */
         thead th {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background-color: #7986cb;
-            color: black;
-            padding: 15px;
-            font-weight: bold;
-            border-bottom: 2px solid rgba(0,0,0,0.1);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Efecto de sombra al hacer scroll */
+            position: sticky; top: 0; z-index: 10;
+            background-color: var(--accent);
+            color: white;
+            padding: 18px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        td { padding: 15px; border-bottom: 1px solid #eee; color: #333; }
-        tbody tr:nth-child(even) { background-color: #f9f9f9; }
-        tbody tr:hover { background-color: #f1f1f1; }
+        td { padding: 18px; border-bottom: 1px solid #f0f0f0; color: #444; }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background-color: #fafafa; }
 
-        /* ESTILOS DE MONTO Y TAGS */
-        .monto-positivo { color: green; font-weight: bold; }
-        .monto-negativo { color: #d32f2f; font-weight: bold; }
-        .tag { font-size: 12px; padding: 4px 8px; border-radius: 12px; background-color: #e0e0e0; color: #555; }
-
-        .filtro-select {
-            padding: 10px 15px; border: 1px solid #ccc; border-radius: 4px;
-            background-color: white; cursor: pointer; min-width: 200px;
+        /* Etiquetas y Montos */
+        .monto-positivo { color: #2e7d32; font-weight: bold; background: #e8f5e9; padding: 5px 10px; border-radius: 8px; }
+        .monto-negativo { color: #c62828; font-weight: bold; background: #ffebee; padding: 5px 10px; border-radius: 8px; }
+        
+        .tag { 
+            font-size: 12px; padding: 5px 12px; border-radius: 20px; 
+            background-color: #f5f5f5; color: #666; font-weight: 600;
+            border: 1px solid #eee;
         }
 
-        .btn-logout {
-            margin-top: auto;
-            color: #b71c1c !important;
-            font-weight: bold;
-            padding-bottom: 10px;
+        @media (max-width: 700px) {
+            .header-top { flex-direction: column; align-items: flex-start; gap: 15px; }
         }
-
-        @media (max-width: 600px) {
-            .page-header { flex-direction: column; align-items: flex-start; gap: 15px; }
-        }
-        #linkAdmin { color: #4a0909; font-weight: bold; display: none; }
     </style>
 </head>
 <body>
 
 <aside class="sidebar" id="miSidebar">
-    <h3 style="margin-bottom: 30px; text-align: center;">Kibo App</h3>
-    <nav class="menu-items">
-        <a href="index.html">- Inicio</a>
-        <a href="historial.html" style="font-weight: bold; border-left: 3px solid #000;">- Historial</a>
-        <a href="estadistica.html">- Estadísticas</a>
-        <a href="graficos.html">- Gráficos (Hucha)</a>
-        <a href="configadmin.html" class="linkAdmin activo" style="color: #4b0082;">- Panel Admin 👤</a>
+    <div class="brand">
+        <img src="../images/KiboSaludo.png" alt="Kibo Logo">
+        <span>Kibo App</span>
+    </div>
 
-        <div style="margin-top: auto; padding: 10px; background-color: #58151c; border-radius: 30px; text-align: center;">
-            <a href="#" id="btnCerrarSesion" style="color: white; font-weight: bold; margin: 0; padding: 0; border: none; display: inline-block;">
-                Cerrar Sesión
-            </a>
-        </div>
+    <nav class="menu-items">
+        <a href="index.html">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            Inicio
+        </a>
+        
+        <a href="historial.html" class="activo-page">
+            <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+            Historial
+        </a>
+
+        <a href="estadistica.html">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+            Estadísticas
+        </a>
+        <a href="graficos.html">
+            <svg viewBox="0 0 24 24"><path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z"/></svg>
+            Hucha (Gráficos)
+        </a>
+        <a href="configadmin.html" id="linkAdmin">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+            Panel Admin
+        </a>
     </nav>
+
+    <div class="sidebar-footer">
+        <a href="#" id="btnCerrarSesion" class="btn-logout">Cerrar Sesión</a>
+    </div>
 </aside>
 
 <main class="main-content">
-    <button class="btn-menu" onclick="alternarMenu()">&#9776;</button>
-
-    <div class="page-header">
-        <h1>Historial de Movimientos</h1>
+    
+    <div class="header-top">
+        <div class="header-left">
+            <button class="btn-menu" onclick="alternarMenu()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+            </button>
+            <h1>Historial de Movimientos</h1>
+        </div>
+        
         <select id="filtroCategoria" class="filtro-select">
             <option value="Todas">📂 Todas las categorías</option>
             <option value="Comida">🍽️ Comida</option>
@@ -157,10 +227,11 @@
             </tr>
             </thead>
             <tbody id="tabla-movimientos-body">
-            </tbody>
+                </tbody>
         </table>
     </div>
 </main>
+
 <script src="../Api/nav_check.js"></script>
 <script>
     let todosLosMovimientos = [];
@@ -184,7 +255,7 @@
 
             if (datos.status === "error") {
                 if(datos.message === "Sesión no iniciada") window.location.href = "login.html";
-                tablaBody.innerHTML = `<tr><td colspan="4">Error: ${datos.message}</td></tr>`;
+                tablaBody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Error: ${datos.message}</td></tr>`;
                 return;
             }
 
@@ -198,7 +269,7 @@
             });
 
         } catch (error) {
-            tablaBody.innerHTML = `<tr><td colspan="4">Error al conectar con el servidor.</td></tr>`;
+            tablaBody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Error al conectar con el servidor.</td></tr>`;
         }
     });
 
@@ -207,21 +278,22 @@
         tablaBody.innerHTML = '';
 
         if (lista.length === 0) {
-            tablaBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 20px;">No hay movimientos registrados.</td></tr>`;
+            tablaBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 30px; color: #888;">No hay movimientos registrados.</td></tr>`;
             return;
         }
 
         lista.forEach(mov => {
             const tr = document.createElement('tr');
             const monto = parseFloat(mov.precio || mov.cantidad || 0);
+            
             const claseMonto = monto >= 0 ? 'monto-positivo' : 'monto-negativo';
             const simbolo = monto > 0 ? '+' : '';
 
             tr.innerHTML = `
                 <td>${mov.fecha}</td>
-                <td>${mov.concepto}</td>
+                <td style="font-weight: 500;">${mov.concepto}</td>
                 <td><span class="tag">${mov.categoria}</span></td>
-                <td class="${claseMonto}">${simbolo}${monto.toFixed(2)}€</td>
+                <td><span class="${claseMonto}">${simbolo}${monto.toFixed(2)}€</span></td>
             `;
             tablaBody.appendChild(tr);
         });
