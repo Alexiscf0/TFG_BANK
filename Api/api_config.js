@@ -20,7 +20,7 @@ export const api_groq = {
 
 // 3. CONFIGURACIÓN DE MONGODB (Base de datos)
 export const config_mongodb = {
-    url: "mongodb+srv://alexiscastelln_db_user:LOLOKRIKO@cluster0.zfxempk.mongodb.net/app_gastos?retryWrites=true&w=majority&appName=Cluster0"
+    url: "mongodb+srv://alexiscastelln_db_user:LOLOKRIKO@cluster0.zfxempk.mongodb.net/KIBO?retryWrites=true&w=majority&appName=Cluster0"
 };
 
 // 4. CONFIGURACIÓN DE NOMINATIM (Mapas y Localización)
