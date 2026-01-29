@@ -73,6 +73,7 @@
 
             text-decoration: none;
         }
+        #linkAdmin { color: #4a0909; font-weight: bold; display: none; }
     </style>
 </head>
 <body>
@@ -81,12 +82,13 @@
     <h3 style="margin-bottom: 30px; text-align: center;">Kibo App</h3>
     <nav class="menu-items">
         <a href="index.html">- Inicio</a>
+        <a href="pruebaadmin.php" id="linkAdmin" style="display: none;">- Panel Admin</a>
         <a href="historial.html">- Historial</a>
         <a href="estadistica.html" style="font-weight: bold; border-left: 3px solid #000;">- Estadísticas</a>
         <a href="graficos.html">- Gráficos (Hucha)</a>
 
-        <div class="logout-box">
-            <a href="#" id="btnCerrarSesion">
+        <div style="margin-top: auto; padding: 10px; background-color: #58151c; border-radius: 30px; text-align: center;">
+            <a href="#" id="btnCerrarSesion" style="color: white; font-weight: bold; margin: 0; padding: 0; border: none; display: inline-block;">
                 Cerrar Sesión
             </a>
         </div>
@@ -131,21 +133,14 @@
         </div>
     </div>
 </main>
-
+<script src="../Api/nav_check.js"></script>
 <script>
     function alternarMenu() {
         document.getElementById('miSidebar').classList.toggle('cerrado');
     }
-
-    // Lógica de Cierre de Sesión (Igual a Index)
-    document.getElementById('btnCerrarSesion').addEventListener('click', function(e) {
+    document.getElementById('btnCerrarSesion').addEventListener('click', (e) => {
         e.preventDefault();
-        fetch('../Back/logout.php').finally(() => {
-            window.location.replace('login.html');
-            setTimeout(() => {
-                window.history.pushState(null, null, 'login.html');
-            }, 0);
-        });
+        window.location.replace('login.html');
     });
 
     // Simulación o carga de datos para los KPIs (puedes conectarlo a tu API de movimientos)

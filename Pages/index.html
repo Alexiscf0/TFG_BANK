@@ -31,15 +31,8 @@
         .btn-purple { background-color: var(--accent); color: black; border: none; padding: 12px 25px; font-size: 16px; cursor: pointer; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); transition: 0.3s; border-radius: 4px; }
         .btn-purple:hover { background-color: #5c6bc0; transform: translateY(-2px); }
 
-        /* GRID DE CARTAS (DASHBOARD) */
-        .grid-dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            width: 100%;
-            margin-bottom: 30px;
-        }
-
+        /* GRID DE CARTAS */
+        .grid-dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; width: 100%; margin-bottom: 30px; }
         .card { background: var(--card); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; display: flex; flex-direction: column; min-height: 320px; }
         .card-full { grid-column: 1 / -1; }
 
@@ -55,31 +48,28 @@
         .movimientos-section { background: var(--card); width: 100%; padding: 25px; border-radius: 8px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .lista-movimientos { list-style: none; margin: 20px 0; }
         .lista-movimientos li { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
-        .sidebar {
-            /* ... tus estilos anteriores ... */
-            display: flex;
-            flex-direction: column;
-        }
 
-        .menu-items {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100%; /* Permite que el margen automático funcione */
-        }
+        .menu-items { flex-grow: 1; display: flex; flex-direction: column; height: 100%; }
+
+        /* Estilo especial para el enlace de admin */
+        #linkAdmin { color: #4a0909; font-weight: bold; display: none; }
     </style>
 </head>
 <body>
 
 <aside class="sidebar" id="miSidebar">
     <h3 style="margin-bottom: 30px; text-align: center;">Kibo App</h3>
-    <nav class="menu-items" style="flex-grow: 1; display: flex; flex-direction: column;">
+    <nav class="menu-items" id="menuLateral">
         <a href="index.html" style="font-weight: bold; border-left: 3px solid #000;">- Inicio</a>
+
+        <a href="pruebaadmin.php" id="linkAdmin">- Panel Admin</a>
+
         <a href="historial.html">- Historial</a>
         <a href="estadistica.html">- Estadísticas</a>
         <a href="graficos.html">- Gráficos (Hucha)</a>
-        <div style="margin-top: auto; padding-top: 20px;background-color: #58151c; border-radius: 30px;text-align: center;">
-            <a href="#" id="btnCerrarSesion" style="color: white; border-left: 3px solid transparent;font-weight: bold">
+
+        <div style="margin-top: auto; padding: 10px; background-color: #58151c; border-radius: 30px; text-align: center;">
+            <a href="#" id="btnCerrarSesion" style="color: white; font-weight: bold; margin: 0; padding: 0; border: none; display: inline-block;">
                 Cerrar Sesión
             </a>
         </div>
@@ -140,24 +130,15 @@
 </main>
 
 <script type="module" src="../Api/dashboard.js"></script>
+<script src="../Api/nav_check.js"></script>
 
 <script>
     function alternarMenu() {
         document.getElementById('miSidebar').classList.toggle('cerrado');
     }
-    document.getElementById('btnCerrarSesion').addEventListener('click', function(e) {
+    document.getElementById('btnCerrarSesion').addEventListener('click', (e) => {
         e.preventDefault();
-
-        // 1. Opcional: Llamar a un archivo PHP para destruir la sesión en el servidor
-        fetch('../Back/logout.php').finally(() => {
-            // 2. Redirección que elimina el rastro del historial
-            window.location.replace('login.html');
-
-            // 3. Bloqueo adicional por si intentan usar las flechas del navegador
-            setTimeout(() => {
-                window.history.pushState(null, null, 'login.html');
-            }, 0);
-        });
+        window.location.replace('login.html');
     });
 </script>
 </body>

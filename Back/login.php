@@ -1,10 +1,10 @@
 <?php
-header('Content-Type: application/json'); // Indicamos que devolvemos JSON
+header('Content-Type: application/json');
 require 'C:/xampp/htdocs/Kibo/vendor/autoload.php';
 use MongoDB\Client;
 session_start();
 
-$response = ["status" => "error", "message" => "Método no permitido"];
+$response = ["status" => "error", "message" => "Ocurrió un error"];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $emailInput = trim($_POST['email'] ?? '');
@@ -18,11 +18,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($usuario) {
             if (password_verify($passInput, $usuario['password'])) {
-                $_SESSION['user_email'] = $usuario['email'];
+
+                $_SESSION['user_email'] = (string)$usuario['email'];
+                $_SESSION['role'] = isset($usuario['role']) ? (string)$usuario['role'] : 'user';
+
+                // Respuesta indicando si es admin o no
                 $response = [
                     "status" => "success",
                     "message" => "Login correcto",
-                    "redirect" => "../Pages/index.html"
+                    "es_admin" => ($_SESSION['role'] === 'admin'),
+                    "role" => $_SESSION['role'],
+                    "redirect" => "../Pages/index.html" // <--- Ambos van al mismo sitio
                 ];
             } else {
                 $response["message"] = "Contraseña incorrecta.";
