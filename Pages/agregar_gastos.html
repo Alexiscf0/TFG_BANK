@@ -8,14 +8,33 @@
         body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; display: flex; flex-direction: column; align-items: center; padding: 20px; }
         .container { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
         h2 { text-align: center; color: #333; }
+<<<<<<< HEAD
         .camera-section { text-align: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
         .btn-scan { background: #5c6bc0; color: white; padding: 12px 20px; border-radius: 25px; cursor: pointer; display: inline-block; font-weight: bold; }
+=======
+        .camera-section { text-align: center; margin-bottom: 20px; }
+
+        /* Tu botón morado original */
+        .btn-scan { background: #5c6bc0; color: white; padding: 12px 20px; border-radius: 25px; cursor: pointer; display: inline-block; font-weight: bold; transition: background 0.3s; }
+        .btn-scan:hover { background: #3f51b5; }
+
+>>>>>>> 7fe3e0a1f2909a3f25e4d225d05928e88287b645
         #preview-container { display: none; margin-top: 15px; }
         #image-preview { max-width: 100%; border-radius: 10px; border: 2px solid #ddd; }
         .loading { color: #5c6bc0; font-weight: bold; display: none; margin: 10px 0; }
+
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; color: #666; }
+<<<<<<< HEAD
         input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+=======
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: all 0.3s; }
+
+        /* Colores dinámicos para el selector */
+        .select-ingreso { color: #2e7d32; border-color: #2e7d32; font-weight: bold; }
+        .select-gasto { color: #c62828; border-color: #c62828; font-weight: bold; }
+
+>>>>>>> 7fe3e0a1f2909a3f25e4d225d05928e88287b645
         .btn-save { width: 100%; padding: 12px; background: #2e7d32; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
         .btn-save:hover { background: #1b5e20; }
         .btn-back { display: block; text-align: center; margin-top: 15px; text-decoration: none; color: #888; font-size: 14px; }
@@ -28,7 +47,11 @@
 <body>
 
 <div class="container">
+<<<<<<< HEAD
     <h2>📝 Nuevo Movimiento</h2>
+=======
+    <h2>📸 Registrar Movimiento</h2>
+>>>>>>> 7fe3e0a1f2909a3f25e4d225d05928e88287b645
 
     <div class="camera-section">
         <p style="font-size: 14px; color: #666; margin-bottom: 10px;">¿Tienes un ticket? Escanéalo:</p>
@@ -63,6 +86,15 @@
         <div class="form-group">
             <label>Categoría:</label>
             <select id="categoria" name="categoria">
+<<<<<<< HEAD
+=======
+                <option value="Otros">📦 Otros</option>
+                <option value="Comida">🍔 Comida</option>
+                <option value="Ocio">🎉 Ocio</option>
+                <option value="Transporte">🚌 Transporte</option>
+                <option value="Hogar">🏠 Hogar</option>
+                <option value="Nómina">💰 Nómina</option>
+>>>>>>> 7fe3e0a1f2909a3f25e4d225d05928e88287b645
             </select>
         </div>
 
@@ -71,6 +103,17 @@
             <input type="date" id="fecha" name="fecha" required>
         </div>
 
+<<<<<<< HEAD
+=======
+        <div class="form-group">
+            <label>Tipo de movimiento:</label>
+            <select id="tipo" name="tipo" class="select-gasto">
+                <option value="gasto" style="color: #c62828;">Gasto 🔻</option>
+                <option value="ingreso" style="color: #2e7d32;">Ingreso 🔺</option>
+            </select>
+        </div>
+
+>>>>>>> 7fe3e0a1f2909a3f25e4d225d05928e88287b645
         <button type="submit" class="btn-save">Guardar Movimiento</button>
     </form>
 
@@ -78,13 +121,15 @@
 </div>
 
 <script type="module">
-    import { analizarTicket } from '../Api/groq_service.js?v=2026';
+    import { analizarTicket } from '../Api/groq_service.js';
 
     const tipoSelect = document.getElementById('tipo');
     const categoriaSelect = document.getElementById('categoria');
     const ticketInput = document.getElementById('ticketInput');
+    const tipoSelect = document.getElementById('tipo');
     const loadingMsg = document.getElementById('loading-message');
 
+<<<<<<< HEAD
     // Categorías según el tipo
     const categorias = {
         Gasto: ["🍔 Comida", "🎉 Ocio", "🚌 Transporte", "🏠 Vivienda", "📦 Otros"],
@@ -107,6 +152,20 @@
     actualizarCategorias();
 
     // 1. Lógica de Escaneo con IA
+=======
+    // Cambiar color del selector automáticamente
+    tipoSelect.addEventListener('change', () => {
+        if (tipoSelect.value === 'ingreso') {
+            tipoSelect.classList.remove('select-gasto');
+            tipoSelect.classList.add('select-ingreso');
+        } else {
+            tipoSelect.classList.remove('select-ingreso');
+            tipoSelect.classList.add('select-gasto');
+        }
+    });
+
+    // Escaneo con IA
+>>>>>>> 7fe3e0a1f2909a3f25e4d225d05928e88287b645
     ticketInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -121,31 +180,48 @@
 
             try {
                 const datos = await analizarTicket(base64);
+<<<<<<< HEAD
 
                 // Si se escanea un ticket, asumimos que es un GASTO
                 tipoSelect.value = "Gasto";
                 actualizarCategorias();
 
+=======
+>>>>>>> 7fe3e0a1f2909a3f25e4d225d05928e88287b645
                 document.getElementById('concepto').value = datos.concepto || "";
-                if (datos.cantidad) {
-                    const num = datos.cantidad.toString().replace(',', '.').replace(/[^\d.-]/g, '');
+
+                if (datos.precio) {
+                    const num = datos.precio.toString().replace(',', '.').replace(/[^\d.-]/g, '');
                     document.getElementById('precio').value = parseFloat(num).toFixed(2);
                 }
 
+<<<<<<< HEAD
                 // Intentar emparejar categoría de la IA
+=======
+>>>>>>> 7fe3e0a1f2909a3f25e4d225d05928e88287b645
                 document.getElementById('categoria').value = datos.categoria || "Otros";
                 document.getElementById('fecha').value = datos.fecha || new Date().toISOString().split('T')[0];
 
-                loadingMsg.innerText = "✅ Ticket procesado correctamente";
+                // Si es ingreso, cambiamos el color de la barra
+                if(datos.tipo === "ingreso" || datos.categoria === "Nómina") {
+                    tipoSelect.value = "ingreso";
+                    tipoSelect.classList.replace('select-gasto', 'select-ingreso');
+                }
+
+                loadingMsg.innerText = "✅ Datos listos";
             } catch (err) {
-                loadingMsg.innerText = "❌ Error al leer el ticket";
+                loadingMsg.innerText = "❌ Error al leer";
                 console.error(err);
             }
         };
         reader.readAsDataURL(file);
     });
 
+<<<<<<< HEAD
     // 2. Lógica de Guardado
+=======
+    // Guardado en MongoDB
+>>>>>>> 7fe3e0a1f2909a3f25e4d225d05928e88287b645
     document.getElementById('gastoForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
@@ -156,17 +232,18 @@
                 method: 'POST',
                 body: formData
             });
-
             const result = await response.json();
-
             if (result.status === "success") {
+<<<<<<< HEAD
                 alert(`✨ ${tipoSelect.value} guardado correctamente`);
+=======
+>>>>>>> 7fe3e0a1f2909a3f25e4d225d05928e88287b645
                 window.location.href = "historial.html";
             } else {
-                alert("⚠️ Error: " + result.message);
+                alert("Error: " + result.message);
             }
         } catch (error) {
-            alert("Fallo de conexión con el servidor");
+            alert("Fallo de conexión");
         }
     });
 </script>
