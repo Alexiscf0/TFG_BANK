@@ -326,5 +326,58 @@
         window.location.replace('login.html');
     });
 </script>
+<script>
+    function alternarMenu() {
+        document.getElementById('miSidebar').classList.toggle('cerrado');
+    }
+
+    document.getElementById('btnCerrarSesion').addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.replace('login.html');
+    });
+
+    // FUNCIÓN MEJORADA: Con detección de errores
+    async function cargarMovimientosDashboard() {
+        const lista = document.getElementById('lista-ultimos-movimientos');
+        try {
+            const response = await fetch('../Back/get_ultimos_movimientos.php');
+
+            // Si el archivo no existe o el PHP falla
+            if (!response.ok) {
+                lista.innerHTML = `<li>⚠️ No se encontró el archivo PHP (Error ${response.status})</li>`;
+                return;
+            }
+
+            const result = await response.json();
+
+            if (result.status === "success") {
+                if (result.data.length === 0) {
+                    lista.innerHTML = '<li>No hay movimientos registrados aún.</li>';
+                    return;
+                }
+                lista.innerHTML = result.data.map(m => {
+                    const precio = parseFloat(m.precio) || 0;
+                    const color = precio < 0 ? 'var(--text-bad)' : 'var(--text-good)';
+                    const signo = precio < 0 ? '' : '+';
+                    return `
+                        <li>
+                            <span><strong>${m.concepto}</strong> <small>(${m.categoria})</small></span>
+                            <span style="color: ${color}; font-weight: bold;">${signo}${precio.toFixed(2)}€</span>
+                        </li>
+                    `;
+                }).join('');
+            } else {
+                lista.innerHTML = `<li>❌ Error: ${result.message}</li>`;
+            }
+        } catch (e) {
+            console.error("Error cargando movimientos:", e);
+            lista.innerHTML = '<li>⚠️ Error de conexión. Revisa la consola (F12).</li>';
+        }
+    }
+
+    // Usamos 'load' para que espere a que TODO esté listo sin pisar otros scripts
+    window.addEventListener('load', cargarMovimientosDashboard);
+
+</script>
 </body>
 </html>
