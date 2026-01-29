@@ -6,85 +6,268 @@
     <title>Inicio - Kibo App</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* --- VARIABLES Y CONFIGURACIÓN BASE --- */
         :root {
-            --bg: #e0e0e0; --card: #ffffff; --accent: #7986cb; --sidebar-bg: #7f7f7f;
-            --text-main: #333333; --state-good: #dcedc8; --text-good: #33691e;
+            --bg: #f0f2f5;       /* Fondo general un poco más suave */
+            --card: #ffffff;     
+            --accent: #7986cb;   /* Morado Kibo */
+            --accent-light: #e8eaf6; /* Morado muy claro para hovers */
+            --text-main: #333333;
+            --text-muted: #666666;
+            
+            --sidebar-width: 260px;
+            --sidebar-bg: #ffffff;
+            
+            --state-good: #dcedc8; --text-good: #33691e;
             --state-bad: #ffcdd2; --text-bad: #b71c1c;
         }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Arial, sans-serif; height: 100vh; display: flex; overflow: hidden; background: var(--bg); }
+        
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            height: 100vh; 
+            display: flex; 
+            overflow: hidden; 
+            background: var(--bg); 
+            color: var(--text-main);
+        }
 
-        /* SIDEBAR */
-        .sidebar { width: 250px; background-color: var(--sidebar-bg); color: #000; display: flex; flex-direction: column; overflow: hidden; transition: width 0.3s ease, padding 0.3s ease; padding: 20px; white-space: nowrap; flex-shrink: 0; }
-        .sidebar.cerrado { width: 0; padding: 20px 0; border: none; }
-        .menu-items a { display: block; text-decoration: none; color: black; font-size: 18px; margin-bottom: 20px; padding-left: 10px; border-left: 3px solid transparent; }
-        .menu-items a:hover { font-weight: bold; border-left: 3px solid #000; }
+        /* --- SIDEBAR ESTILO GEMINI/MODERNO --- */
+        .sidebar { 
+            width: var(--sidebar-width); 
+            background-color: var(--sidebar-bg); 
+            display: flex; 
+            flex-direction: column; 
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); 
+            padding: 20px 15px; 
+            border-right: 1px solid rgba(0,0,0,0.05); /* Separación sutil */
+            flex-shrink: 0;
+            z-index: 100;
+        }
 
-        /* CONTENIDO PRINCIPAL */
-        .main-content { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
-        .btn-menu { align-self: flex-start; font-size: 30px; cursor: pointer; margin-bottom: 20px; background: none; border: none; color: #333; padding: 0 10px; }
+        .sidebar.cerrado { 
+            width: 0; 
+            padding: 20px 0; 
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        /* Título / Logo */
+        .brand {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 30px;
+            padding-left: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px; /* Un poco más de espacio para que respire la imagen */
+        }
+
+        /* ESTILO PARA LA IMAGEN DEL LOGO PEQUEÑO */
+        .brand img {
+            height: 32px; /* Tamaño pequeñito y controlado */
+            width: auto;  /* Mantiene la proporción */
+            object-fit: contain;
+        }
+
+        /* Enlaces del menú */
+        .menu-items { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 5px; /* Espacio entre botones */
+            flex-grow: 1;
+        }
+
+        .menu-items a { 
+            display: flex; 
+            align-items: center; 
+            text-decoration: none; 
+            color: var(--text-muted); 
+            font-size: 15px; 
+            font-weight: 500;
+            padding: 12px 15px; 
+            border-radius: 50px; /* Forma de píldora */
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        /* Iconos SVG */
+        .menu-items a svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            fill: currentColor; /* El icono toma el color del texto */
+            opacity: 0.7;
+        }
+
+        /* Hover y Activo */
+        .menu-items a:hover { 
+            background-color: var(--accent-light); 
+            color: var(--accent); 
+        }
+        
+        .menu-items a.activo-page {
+            background-color: var(--accent-light); 
+            color: var(--accent); 
+            font-weight: 700;
+        }
+
+        /* Estilo especial Admin */
+        #linkAdmin { 
+            color: #b71c1c; 
+            display: none; /* Se activa con JS */
+            margin-top: 10px;
+            background-color: #fff0f0;
+        }
+        #linkAdmin:hover { background-color: #ffebee; }
+
+        /* Botón Cerrar Sesión (Footer Sidebar) */
+        .sidebar-footer {
+            margin-top: auto;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        .btn-logout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 1px solid #eee;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-logout:hover {
+            background-color: #ffebee;
+            color: #d32f2f;
+            border-color: #ffcdd2;
+        }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        .main-content { 
+            flex: 1; 
+            padding: 30px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            position: relative;
+        }
+
+        .header-top {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-menu { 
+            font-size: 24px; 
+            cursor: pointer; 
+            background: white; 
+            border: none; 
+            color: #555; 
+            padding: 8px 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: 0.2s;
+            margin-right: 20px;
+        }
+        .btn-menu:hover { background: #f5f5f5; }
 
         .container-dashboard { max-width: 1100px; width: 100%; margin: 0 auto; }
 
-        /* BOTONES DE ACCIÓN SUPERIORES */
-        .actions-container { display: flex; gap: 20px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
-        .btn-purple { background-color: var(--accent); color: black; border: none; padding: 12px 25px; font-size: 16px; cursor: pointer; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); transition: 0.3s; border-radius: 4px; }
-        .btn-purple:hover { background-color: #5c6bc0; transform: translateY(-2px); }
+        /* BOTONES DE ACCIÓN */
+        .actions-container { display: flex; gap: 20px; justify-content: center; margin-bottom: 30px; }
+        .btn-purple { background-color: var(--accent); color: white; border: none; padding: 12px 25px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 10px rgba(121, 134, 203, 0.4); transition: 0.3s; border-radius: 50px; }
+        .btn-purple:hover { background-color: #5c6bc0; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(121, 134, 203, 0.6); }
 
         /* GRID DE CARTAS */
-        .grid-dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; width: 100%; margin-bottom: 30px; }
-        .card { background: var(--card); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; display: flex; flex-direction: column; min-height: 320px; }
+        .grid-dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; width: 100%; margin-bottom: 30px; }
+        .card { background: var(--card); padding: 25px; border-radius: 16px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); text-align: center; display: flex; flex-direction: column; min-height: 320px; border: 1px solid rgba(255,255,255,0.5); }
         .card-full { grid-column: 1 / -1; }
 
-        h2 { font-size: 1.1rem; margin-bottom: 15px; color: #555; }
-        .score-value { font-size: 3.5rem; font-weight: bold; color: var(--accent); margin: 10px 0; }
-        #scoreMessage { padding: 8px; border-radius: 4px; font-weight: bold; font-size: 14px; }
+        h1 { font-size: 1.8rem; color: #222; margin: 0; }
+        h2 { font-size: 1.1rem; margin-bottom: 20px; color: #555; font-weight: 600; }
+        
+        .score-value { font-size: 4rem; font-weight: 800; color: var(--accent); margin: 10px 0; letter-spacing: -2px; }
+        
+        #scoreMessage { padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 13px; display: inline-block; }
         .msg-good { background: var(--state-good); color: var(--text-good); }
         .msg-bad { background: var(--state-bad); color: var(--text-bad); }
 
-        .chart-container { position: relative; flex-grow: 1; min-height: 200px; }
+        .chart-container { position: relative; flex-grow: 1; min-height: 200px; width: 100%; }
 
         /* SECCIÓN MOVIMIENTOS */
-        .movimientos-section { background: var(--card); width: 100%; padding: 25px; border-radius: 8px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .lista-movimientos { list-style: none; margin: 20px 0; }
-        .lista-movimientos li { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
-
-        .menu-items { flex-grow: 1; display: flex; flex-direction: column; height: 100%; }
-
-        /* Estilo especial para el enlace de admin */
-        #linkAdmin { color: #4a0909; font-weight: bold; display: none; }
+        .movimientos-section { background: var(--card); width: 100%; padding: 30px; border-radius: 16px; margin-top: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        .lista-movimientos { list-style: none; margin: 20px 0; padding: 0; }
+        .lista-movimientos li { padding: 15px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+        .lista-movimientos li:last-child { border-bottom: none; }
     </style>
 </head>
 <body>
 
 <aside class="sidebar" id="miSidebar">
-    <h3 style="margin-bottom: 30px; text-align: center;">Kibo App</h3>
+    <div class="brand">
+        <img src="../images/Kibo.png" alt="Kibo Logo">
+        <span>Kibo App</span>
+    </div>
+
     <nav class="menu-items" id="menuLateral">
-        <a href="index.html" style="font-weight: bold; border-left: 3px solid #000;">- Inicio</a>
+        <a href="index.html" class="activo-page">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            Inicio
+        </a>
 
+        <a href="historial.html">
+            <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+            Historial
+        </a>
 
+        <a href="estadistica.html">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+            Estadísticas
+        </a>
 
-        <a href="historial.html">- Historial</a>
-        <a href="estadistica.html">- Estadísticas</a>
-        <a href="graficos.html">- Gráficos (Hucha)</a>
-        <a href="configadmin.html" class="linkAdmin activo" style="color: #4b0082;">- Panel Admin 👤</a>
+        <a href="graficos.html">
+            <svg viewBox="0 0 24 24"><path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z"/></svg>
+            Hucha (Gráficos)
+        </a>
 
-        <div style="margin-top: auto; padding: 10px; background-color: #58151c; border-radius: 30px; text-align: center;">
-            <a href="#" id="btnCerrarSesion" style="color: white; font-weight: bold; margin: 0; padding: 0; border: none; display: inline-block;">
-                Cerrar Sesión
-            </a>
-        </div>
+        <a href="configadmin.html" id="linkAdmin">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+            Panel Admin
+        </a>
     </nav>
+
+    <div class="sidebar-footer">
+        <a href="#" id="btnCerrarSesion" class="btn-logout">
+            Cerrar Sesión
+        </a>
+    </div>
 </aside>
 
 <main class="main-content">
-    <button class="btn-menu" onclick="alternarMenu()">&#9776;</button>
+    
+    <div class="header-top">
+        <button class="btn-menu" onclick="alternarMenu()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        </button>
+        <h1>Dashboard</h1>
+    </div>
 
     <div class="container-dashboard">
-        <header style="text-align: center; margin-bottom: 25px;">
-            <h1>Panel de Control Financiero</h1>
-        </header>
-
+        
         <div class="actions-container">
             <button class="btn-purple" onclick="window.location.href='agregar_gastos.html'">+ Registrar Movimiento</button>
         </div>
@@ -93,7 +276,7 @@
             <div class="card">
                 <h2>Salud Financiera</h2>
                 <div id="creditScore" class="score-value">...</div>
-                <div id="scoreMessage">Cargando análisis...</div>
+                <div id="scoreMessage">Cargando...</div>
             </div>
 
             <div class="card">
@@ -119,12 +302,12 @@
         </div>
 
         <div class="movimientos-section">
-            <h2>Últimos movimientos</h2>
+            <h2 style="text-align: left; padding-left: 10px;">Últimos movimientos</h2>
             <ul id="lista-ultimos-movimientos" class="lista-movimientos">
                 <li>Cargando historial reciente...</li>
             </ul>
-            <div style="text-align: center;">
-                <button class="btn-purple" onclick="window.location.href='historial.html'">Ver Historial Completo</button>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn-purple" onclick="window.location.href='historial.html'" style="background-color: transparent; color: var(--accent); border: 2px solid var(--accent);">Ver Historial Completo</button>
             </div>
         </div>
     </div>

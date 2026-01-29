@@ -3,76 +3,274 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kibo - Piscina de Ahorros</title>
+    <title>Hucha - Kibo App</title>
     <style>
-        /* Estilos mantenidos para consistencia visual */
-        body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; background-color: #f0f2f5; margin: 0; padding: 20px; }
-        .meta-header { background: white; width: 100%; max-width: 500px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center; margin-bottom: 30px; border-top: 5px solid #7986cb; }
-        .meta-header label { font-weight: bold; color: #555; display: block; margin-bottom: 10px; }
-        .meta-header input { font-size: 24px; font-weight: bold; text-align: center; color: #7986cb; border: 2px solid #eee; border-radius: 8px; width: 80%; outline: none; transition: border-color 0.3s; }
-        .meta-header input:focus { border-color: #7986cb; }
-        .btn-volver { position: absolute; top: 20px; left: 20px; text-decoration: none; background: #7f7f7f; color: white; padding: 8px 15px; border-radius: 5px; font-size: 14px; }
-        .escena-container { position: relative; width: 350px; display: flex; flex-direction: column; align-items: center; margin-bottom: 30px; }
-        .robot-img { width: 180px; height: auto; margin-bottom: -30px; margin-left: -50px; z-index: 10; filter: drop-shadow(2px 5px 5px rgba(0,0,0,0.2)); }
-        .piscina-container { position: relative; width: 100%; height: 250px; border: 8px solid #555; background-color: #e8eaf6; border-radius: 4px; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); }
-        .dinero-liquido { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background-image: url('../images/billetes.png'); background-repeat: repeat; background-size: 30px auto; transition: height 1s cubic-bezier(0.4, 0, 0.2, 1); border-top: 2px solid rgba(255,255,255,0.6); }
-        .controles { padding: 20px; background: #fff; border-radius: 12px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); width: 100%; max-width: 400px; }
-        .info-ahorro { font-size: 18px; margin: 15px 0; color: #2e7d32; font-weight: bold; }
-        button { width: 100%; padding: 12px; cursor: pointer; border: none; border-radius: 8px; font-weight: bold; color: white; font-size: 16px; transition: all 0.2s; margin-bottom: 8px; }
-        .btn-update { background: #7986cb; }
-        .btn-update:hover { background: #5c6bc0; }
-        .btn-reset { background: none; color: #999; font-size: 12px; text-decoration: underline; }
-        .popup-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .popup-contenido { text-align: center; animation: entrada 0.6s ease-out; color: white; }
-        @keyframes entrada { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        /* --- ESTILOS BASE (Mismos que el resto del proyecto) --- */
+        :root {
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --accent: #7986cb;
+            --accent-light: #e8eaf6;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --sidebar-width: 260px;
+            --sidebar-bg: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            height: 100vh; 
+            display: flex; 
+            overflow: hidden; 
+            background: var(--bg); 
+            color: var(--text-main);
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar { 
+            width: var(--sidebar-width); background-color: var(--sidebar-bg); 
+            display: flex; flex-direction: column; transition: all 0.4s ease; 
+            padding: 20px 15px; border-right: 1px solid rgba(0,0,0,0.05); 
+            flex-shrink: 0; z-index: 100;
+        }
+        .sidebar.cerrado { width: 0; padding: 20px 0; opacity: 0; overflow: hidden; }
+
+        .brand { font-size: 22px; font-weight: 700; color: var(--accent); margin-bottom: 30px; padding-left: 10px; display: flex; align-items: center; gap: 12px; }
+        .brand img { height: 32px; width: auto; object-fit: contain; }
+
+        .menu-items { display: flex; flex-direction: column; gap: 5px; flex-grow: 1; }
+        .menu-items a { 
+            display: flex; align-items: center; text-decoration: none; 
+            color: var(--text-muted); font-size: 15px; font-weight: 500;
+            padding: 12px 15px; border-radius: 50px; transition: all 0.2s ease; 
+        }
+        .menu-items a svg { width: 20px; height: 20px; margin-right: 12px; fill: currentColor; opacity: 0.7; }
+        .menu-items a:hover { background-color: var(--accent-light); color: var(--accent); }
+        .menu-items a.activo-page { background-color: var(--accent-light); color: var(--accent); font-weight: 700; }
+
+        .sidebar-footer { margin-top: auto; border-top: 1px solid #eee; padding-top: 15px; }
+        .btn-logout {
+            display: flex; align-items: center; justify-content: center; width: 100%;
+            padding: 12px; background-color: transparent; color: var(--text-muted);
+            border: 1px solid #eee; border-radius: 12px; font-weight: 600; cursor: pointer;
+            transition: 0.3s; text-decoration: none;
+        }
+        .btn-logout:hover { background-color: #ffebee; color: #d32f2f; border-color: #ffcdd2; }
+        #linkAdmin { color: #b71c1c; display: none; margin-top: 10px; background-color: #fff0f0; }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+
+        .header-top { width: 100%; max-width: 800px; display: flex; align-items: center; margin-bottom: 20px; }
+        .btn-menu { 
+            font-size: 24px; cursor: pointer; background: white; border: none; 
+            color: #555; padding: 8px 12px; border-radius: 8px; margin-right: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s;
+        }
+        .btn-menu:hover { background: #f5f5f5; }
+        h1 { font-size: 1.8rem; color: #222; margin: 0; }
+
+        /* --- ESTILOS DE LA HUCHA (Piscina) --- */
+        .hucha-wrapper {
+            background: var(--card);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            max-width: 600px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        /* Input de Meta */
+        .meta-container {
+            text-align: center; margin-bottom: 40px; width: 100%;
+            background: #fafafa; padding: 15px; border-radius: 15px;
+            border: 1px dashed #ddd;
+        }
+        .meta-container label { font-size: 14px; font-weight: 700; color: #777; letter-spacing: 1px; }
+        .meta-input-group { display: flex; justify-content: center; align-items: center; gap: 5px; margin-top: 10px; }
+        .meta-input-group input {
+            font-size: 28px; font-weight: 800; color: var(--accent);
+            border: none; background: transparent; text-align: right;
+            width: 150px; outline: none; border-bottom: 2px solid transparent; transition: 0.3s;
+        }
+        .meta-input-group input:focus { border-bottom-color: var(--accent); }
+        .currency-symbol { font-size: 28px; font-weight: 800; color: var(--accent); }
+
+        /* Escena Visual */
+        .escena-container { position: relative; width: 100%; max-width: 350px; display: flex; flex-direction: column; align-items: center; margin-bottom: 30px; }
+        
+        .robot-img { 
+            width: 160px; height: auto; margin-bottom: -25px; margin-left: -40px; 
+            z-index: 10; filter: drop-shadow(2px 5px 5px rgba(0,0,0,0.15)); 
+            transition: transform 0.3s ease;
+        }
+        .robot-img:hover { transform: translateY(-5px) rotate(-2deg); }
+
+        .piscina-container { 
+            position: relative; width: 100%; height: 220px; 
+            border: 6px solid #555; background-color: var(--accent-light); 
+            border-radius: 0 0 12px 12px; overflow: hidden; 
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.05); 
+        }
+
+        .dinero-liquido { 
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; 
+            background-image: url('../images/billetes.png'); 
+            background-repeat: repeat; background-size: 40px auto; 
+            transition: height 1s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-top: 3px solid rgba(255,255,255,0.8); 
+        }
+
+        /* Controles Inferiores */
+        .controls-area { width: 100%; display: flex; flex-direction: column; gap: 15px; }
+        
+        .input-cantidad-wrapper { position: relative; }
+        .input-cantidad-wrapper input {
+            width: 100%; padding: 15px; border-radius: 50px; border: 1px solid #ddd;
+            font-size: 16px; outline: none; transition: 0.3s; text-align: center;
+        }
+        .input-cantidad-wrapper input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(121, 134, 203, 0.2); }
+
+        .stats-row { display: flex; justify-content: space-between; font-weight: bold; padding: 0 15px; color: #555; font-size: 14px; }
+        .stats-row span.val { color: var(--state-good); font-size: 18px; }
+
+        .btn-update { 
+            width: 100%; background: var(--accent); color: white; padding: 15px; 
+            border: none; border-radius: 50px; font-weight: 700; cursor: pointer; 
+            font-size: 16px; box-shadow: 0 4px 10px rgba(121, 134, 203, 0.4); 
+            transition: 0.3s; 
+        }
+        .btn-update:hover { background-color: #5c6bc0; transform: translateY(-2px); }
+
+        .btn-reset { 
+            background: none; border: none; color: #999; font-size: 13px; 
+            cursor: pointer; text-decoration: underline; margin-top: 5px; 
+        }
+        .btn-reset:hover { color: var(--state-bad); }
+
+        /* Popup */
+        .popup-overlay { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.7); z-index: 200; justify-content: center; align-items: center; 
+            backdrop-filter: blur(4px); 
+        }
+        .popup-contenido { 
+            background: white; padding: 40px; border-radius: 20px; text-align: center; 
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
     </style>
 </head>
 <body>
 
-<a href="index.html" class="btn-volver">← Inicio</a>
-
-<div class="meta-header">
-    <label>🎯 MI META DE AHORRO</label>
-    <input type="number" id="input-meta" value="1000"
-           onfocus="this.value=''"
-           onblur="if(this.value=='') this.value='1000'"
-           onchange="actualizarAhorro()">
-    <span style="font-weight: bold; color: #7986cb; font-size: 20px;">€</span>
-</div>
-
-<div class="escena-container">
-    <img src="../images/KiboTrampolin.png" alt="Robot" class="robot-img">
-    <div class="piscina-container">
-        <div class="dinero-liquido" id="barra-dinero"></div>
-    </div>
-</div>
-
-<div class="controles">
-    <label style="display:block; margin-bottom:10px; font-size:14px; color:#777;">Sumar ahorro hoy (€):</label>
-    <div class="input-group">
-        <input type="number" id="input-cantidad" placeholder="Ej: 25.50"
-               onfocus="this.value=''">
+<aside class="sidebar" id="miSidebar">
+    <div class="brand">
+        <img src="../images/KiboSaludo.png" alt="Kibo Logo">
+        <span>Kibo App</span>
     </div>
 
-    <div class="info-ahorro">
-        <span id="texto-dinero">0.00€</span> / <span id="texto-porcentaje">0%</span>
+    <nav class="menu-items">
+        <a href="index.html">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> Inicio
+        </a>
+        <a href="historial.html">
+            <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg> Historial
+        </a>
+        <a href="estadistica.html">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg> Estadísticas
+        </a>
+        
+        <a href="graficos.html" class="activo-page">
+            <svg viewBox="0 0 24 24"><path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z"/></svg>
+            Hucha
+        </a>
+        <a href="configadmin.html" id="linkAdmin">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+            Panel Admin
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <a href="#" id="btnCerrarSesion" class="btn-logout">Cerrar Sesión</a>
+    </div>
+</aside>
+
+<main class="main-content">
+    
+    <div class="header-top">
+        <button class="btn-menu" onclick="alternarMenu()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        </button>
+        <h1>Hucha de Ahorros</h1>
     </div>
 
-    <button class="btn-update" onclick="actualizarAhorro()">Añadir y Guardar</button>
-    <button class="btn-reset" onclick="resetearAhorro()">Vaciar Piscina</button>
-</div>
+    <div class="hucha-wrapper">
+        
+        <div class="meta-container">
+            <label>🎯 MI META ACTUAL</label>
+            <div class="meta-input-group">
+                <input type="number" id="input-meta" value="1000"
+                    onfocus="this.value=''"
+                    onblur="if(this.value=='') this.value='1000'"
+                    onchange="actualizarAhorro()">
+                <span class="currency-symbol">€</span>
+            </div>
+        </div>
+
+        <div class="escena-container">
+            <img src="../images/KiboTrampolin.png" alt="Robot Kibo" class="robot-img">
+            <div class="piscina-container">
+                <div class="dinero-liquido" id="barra-dinero"></div>
+            </div>
+        </div>
+
+        <div class="controls-area">
+            <div class="stats-row">
+                <span>Progreso: <span id="texto-porcentaje" style="color:#7986cb;">0%</span></span>
+                <span>Ahorrado: <span id="texto-dinero" class="val">0.00€</span></span>
+            </div>
+
+            <div class="input-cantidad-wrapper">
+                <input type="number" id="input-cantidad" placeholder="¿Cuánto ahorras hoy? (Ej: 20)" onfocus="this.value=''">
+            </div>
+
+            <button class="btn-update" onclick="actualizarAhorro()">¡Echar a la hucha!</button>
+            <button class="btn-reset" onclick="resetearAhorro()">Vaciar hucha</button>
+        </div>
+
+    </div>
+</main>
 
 <div class="popup-overlay" id="popupExito" onclick="cerrarPopup()">
     <div class="popup-contenido">
-        <h2>¡META COMPLETADA! 🚀</h2>
-        <img src="../images/KiboCompleto.png" alt="Felicidades" style="max-width:200px;">
+        <h2 style="color: #333; margin-bottom: 20px;">¡META COMPLETADA! 🚀</h2>
+        <img src="../images/KiboCompleto.png" alt="Felicidades" style="max-width:180px; margin-bottom: 20px;">
+        <p style="color: #666;">¡Has llenado la piscina! Buen trabajo.</p>
+        <button class="btn-update" style="margin-top: 15px;" onclick="cerrarPopup()">Seguir ahorrando</button>
     </div>
 </div>
 
+<script src="../Api/nav_check.js"></script>
 <script>
+    function alternarMenu() {
+        document.getElementById('miSidebar').classList.toggle('cerrado');
+    }
+    document.getElementById('btnCerrarSesion').addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.replace('login.html');
+    });
+
+    // LÓGICA DE LA PISCINA (Mantenida intacta pero limpia)
     let acumuladoTotal = 0;
 
-    // Cargar datos al iniciar
     window.onload = async () => {
         try {
             const response = await fetch('../Back/get_savings.php');
@@ -82,7 +280,7 @@
                 acumuladoTotal = data.acumulado || 0;
                 renderizarPiscina(data.meta || 1000);
             }
-        } catch (e) { console.error("Error al recuperar ahorros persistidos"); }
+        } catch (e) { console.error("Error al cargar datos"); }
     };
 
     async function actualizarAhorro() {
@@ -94,14 +292,13 @@
 
         acumuladoTotal += cantidad;
 
-        // Guardar en MongoDB Atlas
         try {
             await fetch('../Back/save_savings.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ meta: meta, acumulado: acumuladoTotal })
             });
-        } catch (e) { console.error("Error al guardar en la nube"); }
+        } catch (e) { console.error("Error al guardar"); }
 
         renderizarPiscina(meta);
         document.getElementById('input-cantidad').value = '';
@@ -119,7 +316,7 @@
     }
 
     async function resetearAhorro() {
-        if(confirm("¿Seguro que quieres vaciar la piscina?")) {
+        if(confirm("¿Seguro que quieres vaciar toda la hucha?")) {
             acumuladoTotal = 0;
             const meta = parseFloat(document.getElementById('input-meta').value) || 1000;
             await fetch('../Back/save_savings.php', {
@@ -134,5 +331,6 @@
     function mostrarExito() { document.getElementById('popupExito').style.display = 'flex'; }
     function cerrarPopup() { document.getElementById('popupExito').style.display = 'none'; }
 </script>
+
 </body>
 </html>
