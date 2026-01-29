@@ -6,125 +6,172 @@
     <title>Movimientos - Kibo App</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Arial, sans-serif; height: 100vh; display: flex; background-color: #e0e0e0; overflow: hidden; }
+
+        /* Evitamos el scroll en el cuerpo para que la app se sienta fija */
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            background-color: #e0e0e0;
+            overflow: hidden;
+        }
 
         /* BARRA LATERAL */
-        .sidebar { width: 250px; background-color: #7f7f7f; padding: 20px; display: flex; flex-direction: column; color: #000; flex-shrink: 0; transition: width 0.3s ease, padding 0.3s ease; overflow: hidden; white-space: nowrap; }
+        .sidebar {
+            width: 250px; background-color: #7f7f7f; padding: 20px;
+            display: flex; flex-direction: column; color: #000;
+            flex-shrink: 0; transition: width 0.3s ease, padding 0.3s ease;
+            overflow: hidden; white-space: nowrap;
+        }
         .sidebar.cerrado { width: 0; padding: 20px 0; border: none; }
-        .menu-items a { display: block; text-decoration: none; color: black; font-size: 18px; margin-bottom: 20px; padding-left: 10px; border-left: 3px solid transparent; }
+
+        .menu-items { flex-grow: 1; display: flex; flex-direction: column; }
+        .menu-items a {
+            display: block; text-decoration: none; color: black;
+            font-size: 18px; margin-bottom: 20px; padding-left: 10px;
+            border-left: 3px solid transparent;
+        }
         .menu-items a:hover { font-weight: bold; border-left: 3px solid #000; }
 
-        /* CONTENIDO */
-        .main-content { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; }
-        .btn-menu { align-self: flex-start; font-size: 30px; cursor: pointer; margin-bottom: 20px; background: none; border: none; color: #333; padding: 0; }
-        
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        h1 { font-weight: normal; font-size: 28px; }
-        .btn-purple { background-color: #7986cb; color: black; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 4px; }
+        /* CONTENIDO PRINCIPAL */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden; /* Bloqueamos el scroll exterior */
+        }
 
-        /* TABLA */
-        .table-container { background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        thead { background-color: #7986cb; }
-        th { padding: 15px; color: black; font-weight: bold; font-size: 16px; }
+        .btn-menu { align-self: flex-start; font-size: 30px; cursor: pointer; margin-bottom: 20px; background: none; border: none; color: #333; padding: 0; }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-shrink: 0; /* Evita que el cabezal se encoja */
+        }
+        h1 { font-weight: normal; font-size: 28px; }
+
+        /* CONTENEDOR DE TABLA CON SCROLL INTERNO */
+        .table-wrapper {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: auto; /* Aquí vive el scroll ahora */
+            flex-grow: 1; /* Ocupa todo el espacio sobrante */
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate; /* Necesario para que el sticky funcione bien */
+            border-spacing: 0;
+            text-align: left;
+            min-width: 600px;
+        }
+
+        /* ENCABEZADO FIJO (STICKY) */
+        thead th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: #7986cb;
+            color: black;
+            padding: 15px;
+            font-weight: bold;
+            border-bottom: 2px solid rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Efecto de sombra al hacer scroll */
+        }
+
         td { padding: 15px; border-bottom: 1px solid #eee; color: #333; }
         tbody tr:nth-child(even) { background-color: #f9f9f9; }
+        tbody tr:hover { background-color: #f1f1f1; }
+
+        /* ESTILOS DE MONTO Y TAGS */
         .monto-positivo { color: green; font-weight: bold; }
         .monto-negativo { color: #d32f2f; font-weight: bold; }
         .tag { font-size: 12px; padding: 4px 8px; border-radius: 12px; background-color: #e0e0e0; color: #555; }
-        /* Estilos para el contenedor del filtro */
-        .page-header select {
-            padding: 10px 15px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: white;
-            cursor: pointer;
-            color: #333;
-            outline: none;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            min-width: 200px;
+
+        .filtro-select {
+            padding: 10px 15px; border: 1px solid #ccc; border-radius: 4px;
+            background-color: white; cursor: pointer; min-width: 200px;
         }
 
-        /* Efecto al pasar el ratón o hacer click */
-        .page-header select:hover {
-            border-color: #7986cb;
+        .btn-logout {
+            margin-top: auto;
+            color: #b71c1c !important;
+            font-weight: bold;
+            padding-bottom: 10px;
         }
 
-        .page-header select:focus {
-            border-color: #7986cb;
-            box-shadow: 0 0 5px rgba(121, 134, 203, 0.5);
-        }
-
-        /* Ajuste para que el encabezado no se amontone en móviles */
         @media (max-width: 600px) {
-            .page-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
+            .page-header { flex-direction: column; align-items: flex-start; gap: 15px; }
         }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar" id="miSidebar">
-        <h3 style="margin-bottom: 30px; text-align: center;">Kibo App</h3>
-        <nav class="menu-items">
-            <a href="index.html">- Inicio</a>
-            <a href="movimientos.html" style="font-weight: bold; border-left: 3px solid #000;">- Historial</a>
-            <a href="estadistica.html">- Estadísticas</a>
-            <a href="graficos.html">- Gráficos (Hucha)</a>
-            <a href="dashboard.html">- Dashboard IA</a>
-        </nav>
-    </aside>
+<aside class="sidebar" id="miSidebar">
+    <h3 style="margin-bottom: 30px; text-align: center;">Kibo App</h3>
+    <nav class="menu-items">
+        <a href="index.html">- Inicio</a>
+        <a href="historial.html" style="font-weight: bold; border-left: 3px solid #000;">- Historial</a>
+        <a href="estadistica.html">- Estadísticas</a>
+        <a href="graficos.html">- Gráficos (Hucha)</a>
 
-    <main class="main-content">
-        <button class="btn-menu" onclick="alternarMenu()">&#9776;</button>
+        <div style="margin-top: auto; padding-top: 20px;background-color: #58151c; border-radius: 30px;text-align: center;">
+            <a href="#" id="btnCerrarSesion" style="color: white; border-left: 3px solid transparent;font-weight: bold">
+                Cerrar Sesión
+            </a>
+        </div>
+    </nav>
+</aside>
 
+<main class="main-content">
+    <button class="btn-menu" onclick="alternarMenu()">&#9776;</button>
 
-            <div class="page-header">
-                <h1>Historial de Movimientos</h1>
+    <div class="page-header">
+        <h1>Historial de Movimientos</h1>
+        <select id="filtroCategoria" class="filtro-select">
+            <option value="Todas">📂 Todas las categorías</option>
+            <option value="Comida">🍽️ Comida</option>
+            <option value="Ocio">🎮 Ocio</option>
+            <option value="Transporte">🚗 Transporte</option>
+            <option value="Vivienda">🏠 Vivienda</option>
+            <option value="Otros">📦 Otros</option>
+        </select>
+    </div>
 
-                <select id="filtroCategoria" class="filtro-select">
-                    <option value="Todas">📂 Todas las categorías</option>
-                    <option value="Comida">🍽️ Comida</option>
-                    <option value="Ocio">🎮 Ocio</option>
-                    <option value="Transporte">🚗 Transporte</option>
-                    <option value="Vivienda">🏠 Vivienda</option>
-                    <option value="Otros">📦 Otros</option>
-                </select>
-            </div>
-
-        <div class="table-container">
-            <div class="table-container">
-    <table>
-        <thead>
+    <div class="table-wrapper">
+        <table>
+            <thead>
             <tr>
                 <th>Fecha</th>
                 <th>Concepto / Descripción</th>
                 <th>Categoría</th>
                 <th>Cantidad</th>
-                <th>Otros</th>
             </tr>
-        </thead>
-        
-        <!-- CHAVAL Aqui entre los dos TBODY -->
-        <tbody id="tabla-movimientos-body">
-
+            </thead>
+            <tbody id="tabla-movimientos-body">
             </tbody>
-    </table>
-</div>
-        </div>
-    </main>
-</body>
+        </table>
+    </div>
+</main>
 
 <script>
-    let todosLosMovimientos = []; // Variable global para guardar los datos originales
+    let todosLosMovimientos = [];
 
     function alternarMenu() {
         document.getElementById('miSidebar').classList.toggle('cerrado');
     }
+
+    // Cerrar sesión sin vuelta atrás
+    document.getElementById('btnCerrarSesion').addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.replace('login.html');
+    });
 
     document.addEventListener('DOMContentLoaded', async () => {
         const tablaBody = document.getElementById('tabla-movimientos-body');
@@ -135,79 +182,49 @@
             const datos = await response.json();
 
             if (datos.status === "error") {
-                if(datos.message === "Sesión no iniciada") {
-                    window.location.href = "login.html";
-                }
+                if(datos.message === "Sesión no iniciada") window.location.href = "login.html";
                 tablaBody.innerHTML = `<tr><td colspan="4">Error: ${datos.message}</td></tr>`;
                 return;
             }
 
-            // Guardamos los datos para filtrar sin recargar la página
             todosLosMovimientos = datos;
-
-            // Mostramos todos al inicio
             renderizarTabla(todosLosMovimientos);
 
-            // Escuchamos el cambio en el select
             filtroSelect.addEventListener('change', () => {
-                const categoriaSeleccionada = filtroSelect.value;
-
-                if (categoriaSeleccionada === "Todas") {
-                    renderizarTabla(todosLosMovimientos);
-                } else {
-                    const filtrados = todosLosMovimientos.filter(mov => mov.categoria === categoriaSeleccionada);
-                    renderizarTabla(filtrados);
-                }
+                const cat = filtroSelect.value;
+                const filtrados = (cat === "Todas") ? todosLosMovimientos : todosLosMovimientos.filter(m => m.categoria === cat);
+                renderizarTabla(filtrados);
             });
 
         } catch (error) {
-            console.error("Error:", error);
             tablaBody.innerHTML = `<tr><td colspan="4">Error al conectar con el servidor.</td></tr>`;
         }
     });
 
-    // Función para pintar las filas en la tabla
     function renderizarTabla(lista) {
         const tablaBody = document.getElementById('tabla-movimientos-body');
         tablaBody.innerHTML = '';
 
         if (lista.length === 0) {
-            tablaBody.innerHTML = `<tr><td colspan="4">No hay movimientos registrados.</td></tr>`;
+            tablaBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 20px;">No hay movimientos registrados.</td></tr>`;
             return;
         }
 
         lista.forEach(mov => {
             const tr = document.createElement('tr');
-
-            // Convertimos a número decimal
-            let monto = parseFloat(mov.cantidad);
-
-            // Lógica de signo: Si el tipo es 'gasto', lo ponemos en negativo
-            // Si es 'ingreso', lo dejamos positivo
-            const esGasto = mov.tipo === 'gasto';
-            if (esGasto && monto > 0) {
-                monto = -monto;
-            } else if (!esGasto && monto < 0) {
-                monto = Math.abs(monto); // Asegurar que sea positivo si es ingreso
-            }
-
+            const monto = parseFloat(mov.precio || mov.cantidad || 0);
             const claseMonto = monto >= 0 ? 'monto-positivo' : 'monto-negativo';
-            const simbolo = monto >= 0 ? '+' : ''; // El '-' ya viene incluido en el número negativo
+            const simbolo = monto > 0 ? '+' : '';
 
             tr.innerHTML = `
-            <td>${mov.fecha}</td>
-            <td>${mov.concepto}</td>
-            <td><span class="tag">${mov.categoria}</span></td>
-            <td class="${claseMonto}">${simbolo}${monto.toFixed(2)}€</td>
-        `;
+                <td>${mov.fecha}</td>
+                <td>${mov.concepto}</td>
+                <td><span class="tag">${mov.categoria}</span></td>
+                <td class="${claseMonto}">${simbolo}${monto.toFixed(2)}€</td>
+            `;
             tablaBody.appendChild(tr);
         });
     }
-
-    function alternarMenu() {
-        document.getElementById('miSidebar').classList.toggle('cerrado');
-    }
-
-
 </script>
+</body>
 </html>

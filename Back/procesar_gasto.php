@@ -19,26 +19,36 @@ try {
 
     // Recogemos los datos del formulario
     $concepto  = $_POST['concepto']  ?? 'Sin concepto';
-    $precio    = (float)($_POST['precio'] ?? 0);
+    $precioBruto = (float)($_POST['precio'] ?? 0);
     $categoria = $_POST['categoria'] ?? 'Otros';
     $fecha     = $_POST['fecha']     ?? date("Y-m-d");
+    $tipo      = $_POST['tipo']      ?? 'Gasto'; // Recogemos el tipo (Gasto o Ingreso)
     $email     = $_SESSION['user_email'];
 
-    // Preparamos el documento con los campos que requiere el Dashboard
+    // --- LÓGICA DE SIGNOS ---
+    // Si es Gasto, el precio debe ser negativo para que el Dashboard reste.
+    // Si es Ingreso, el precio debe ser positivo.
+    if (strtolower($tipo) === 'gasto') {
+        $precioFinal = -abs($precioBruto);
+    } else {
+        $precioFinal = abs($precioBruto);
+    }
+
+    // Preparamos el documento
     $documento = [
         "user_email" => $email,
         "concepto"   => $concepto,
-        "precio"     => $precio,
+        "precio"     => $precioFinal, // Guardamos el precio con el signo correcto
         "categoria"  => $categoria,
         "fecha"      => $fecha,
-        "tipo"       => "gasto", // Fundamental para que el Dashboard lo sume como gasto
+        "tipo"       => strtolower($tipo), // Guardamos "gasto" o "ingreso"
         "fecha_creacion" => date("Y-m-d H:i:s")
     ];
 
     $resultado = $collection->insertOne($documento);
 
     if ($resultado->getInsertedCount() > 0) {
-        echo json_encode(["status" => "success", "message" => "Guardado en Atlas"]);
+        echo json_encode(["status" => "success", "message" => "Movimiento guardado como " . $tipo]);
     } else {
         echo json_encode(["status" => "error", "message" => "No se pudo insertar en la BD"]);
     }
