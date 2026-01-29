@@ -15,92 +15,34 @@
             .catch(() => window.location.replace('login.html'));
     </script>
     <style>
-        :root {
-            --bg: #e0e0e0;
-            --card: #ffffff;
-            --accent: #7986cb;
-            --sidebar-bg: #7f7f7f;
-        }
+        :root { --bg: #e0e0e0; --card: #ffffff; --accent: #7986cb; --sidebar-bg: #7f7f7f; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: Arial, sans-serif;
-            height: 100vh;
-            display: flex;
-            overflow: hidden;
-            background: var(--bg);
-        }
+        body { font-family: Arial, sans-serif; height: 100vh; display: flex; overflow: hidden; background: var(--bg); }
 
         /* SIDEBAR */
-        .sidebar {
-            width: 250px;
-            background-color: var(--sidebar-bg);
-            color: #000;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transition: width 0.3s ease, padding 0.3s ease;
-            padding: 20px;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .sidebar.cerrado { width: 0; padding: 20px 0; border: none; }
-
-        .menu-items {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .menu-items a {
-            display: block;
-            text-decoration: none;
-            color: black;
-            font-size: 18px;
-            margin-bottom: 20px;
-            padding-left: 10px;
-            border-left: 3px solid transparent;
-        }
-        .menu-items a:hover, .menu-items a.activo { font-weight: bold; border-left: 3px solid #000; }
-
-        .logout-box {
-            margin-top: auto;
-            padding: 10px;
-            background-color: #58151c;
-            border-radius: 30px;
-            text-align: center;
-        }
-        .logout-box a {
-            color: white !important;
-            font-weight: bold;
-            text-decoration: none;
-            display: block;
-            margin-bottom: 0 !important;
-        }
+        .sidebar { width: 250px; background-color: var(--sidebar-bg); padding: 20px; display: flex; flex-direction: column; transition: width 0.3s; }
+        .sidebar.cerrado { width: 0; padding: 0; overflow: hidden; }
+        .menu-items { flex-grow: 1; display: flex; flex-direction: column; }
+        .menu-items a { display: block; text-decoration: none; color: black; margin-bottom: 20px; padding-left: 10px; border-left: 3px solid transparent; }
+        .menu-items a.activo { font-weight: bold; border-left: 3px solid #4b0082; }
+        .logout-box { margin-top: auto; background: #58151c; border-radius: 30px; text-align: center; padding: 10px; }
+        .logout-box a { color: white !important; text-decoration: none; font-weight: bold; }
 
         /* CONTENIDO */
-        .main-content { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; }
-        .btn-menu { align-self: flex-start; font-size: 30px; cursor: pointer; margin-bottom: 20px; background: none; border: none; color: #333; }
+        .main-content { flex: 1; padding: 20px; overflow-y: auto; }
 
-        .admin-card {
-            background: var(--card);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            max-width: 1000px;
-            width: 100%;
-            margin: 0 auto;
-        }
+        /* BARRA SUPERIOR ACTUALIZADA */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .user-pill { background: white; padding: 8px 20px; border-radius: 50px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-weight: bold; color: #4b0082; }
 
-        .form-crear { margin-bottom: 30px; background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
-        .form-crear input { padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px; width: 100%; }
+        .admin-card { background: var(--card); padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 1000px; margin: 0 auto; }
+        .form-crear { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #eee; }
+        input { padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px; width: 100%; }
         .btn-add { background: #2e7d32; color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
         .btn-del { background: #ef5350; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background-color: var(--accent); color: white; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
+        th { background: var(--accent); color: white; }
     </style>
 </head>
 <body>
@@ -111,150 +53,94 @@
         <a href="index.html">- Inicio</a>
         <a href="historial.html">- Historial</a>
         <a href="estadistica.html">- Estadísticas</a>
-        <a href="graficos.html">- Gráficos (Hucha)</a>
-        <a href="configadmin.html" class="activo" style="color: #4b0082;">- Panel Admin 👤</a>
-
-        <div class="logout-box">
-            <a href="#" id="btnCerrarSesion">Cerrar Sesión</a>
-        </div>
+        <a href="configadmin.html" class="activo">- Panel Admin 👤</a>
+        <div class="logout-box"><a href="#" id="btnCerrarSesion">Cerrar Sesión</a></div>
     </nav>
 </aside>
 
 <main class="main-content">
-    <button class="btn-menu" onclick="alternarMenu()">&#9776;</button>
+    <div class="top-bar">
+        <button onclick="alternarMenu()" style="font-size: 25px; background:none; border:none; cursor:pointer;">&#9776;</button>
+        <div class="user-pill">👋 Bienvenido, <span id="nombreUsuario">...</span></div>
+    </div>
 
     <div class="admin-card">
         <h1>👥 Gestión de Usuarios</h1>
-        <p style="margin-bottom: 20px; color: #666;">Administra los accesos y usuarios de la plataforma.</p>
-
         <div class="form-crear">
             <h3>Registrar Nuevo Usuario</h3>
             <form id="formCrear">
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <input type="text" id="newUsername" placeholder="Nombre de usuario" required style="flex: 1; min-width: 200px;">
-                    <input type="email" id="newEmail" placeholder="Correo electrónico" required style="flex: 1; min-width: 200px;">
-                    <input type="password" id="newPass" placeholder="Contraseña temporal" required style="flex: 1; min-width: 200px;">
-                </div>
+                <input type="text" id="newUsername" placeholder="Nombre de usuario" required>
+                <input type="email" id="newEmail" placeholder="Correo electrónico" required>
+                <input type="password" id="newPass" placeholder="Contraseña temporal" required>
                 <button type="submit" class="btn-add">Crear Usuario</button>
             </form>
         </div>
 
-        <input type="text" id="buscador" placeholder="Buscar por usuario o email..." style="width:100%; padding: 12px; margin-bottom:20px; border-radius: 5px; border: 1px solid #ccc;">
+        <input type="text" id="buscador" placeholder="Buscar usuarios..." style="margin-bottom:15px;">
 
         <table>
             <thead>
-            <tr>
-                <th>Usuario</th>
-                <th>Email</th>
-                <th>Registro</th>
-                <th>Acciones</th>
-            </tr>
+            <tr><th>Usuario</th><th>Email</th><th>Registro</th><th>Acciones</th></tr>
             </thead>
-            <tbody id="listaUsuarios">
-            <tr><td colspan="4">Cargando lista de usuarios...</td></tr>
-            </tbody>
+            <tbody id="listaUsuarios"></tbody>
         </table>
     </div>
 </main>
 
 <script>
-    function alternarMenu() {
-        document.getElementById('miSidebar').classList.toggle('cerrado');
+    function alternarMenu() { document.getElementById('miSidebar').classList.toggle('cerrado'); }
+
+    // NUEVA FUNCIÓN: Mostrar nombre de usuario
+    async function mostrarNombre() {
+        const res = await fetch('../Back/comprobar_rol.php');
+        const data = await res.json();
+        document.getElementById('nombreUsuario').innerText = data.username;
     }
 
-    // Cierre de sesión
-    document.getElementById('btnCerrarSesion').addEventListener('click', (e) => {
-        e.preventDefault();
-        fetch('../Back/logout.php').finally(() => {
-            window.location.replace('login.html');
-        });
-    });
-
-    // Cargar usuarios desde MongoDB
     async function cargarUsuarios() {
-        try {
-            const res = await fetch('../Back/get_all_users.php');
-            const r = await res.json();
-            if (r.status === "success") {
-                renderizarTabla(r.data);
-            } else {
-                console.error(r.message);
-            }
-        } catch (e) {
-            console.error("Error al conectar con la API");
+        const res = await fetch('../Back/get_all_users.php');
+        const r = await res.json();
+        if (r.status === "success") {
+            document.getElementById('listaUsuarios').innerHTML = r.data.map(u => `
+                <tr>
+                    <td><strong>${u.username}</strong></td>
+                    <td>${u.email}</td>
+                    <td>${u.fecha}</td>
+                    <td><button class="btn-del" onclick="eliminarUsuario('${u.email}')">Eliminar</button></td>
+                </tr>
+            `).join('');
         }
     }
 
-    function renderizarTabla(lista) {
-        const tbody = document.getElementById('listaUsuarios');
-        if (lista.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4">No hay usuarios registrados.</td></tr>';
-            return;
-        }
-        tbody.innerHTML = lista.map(u => `
-            <tr>
-                <td><strong>${u.username}</strong></td>
-                <td>${u.email}</td>
-                <td>${u.fecha}</td>
-                <td><button class="btn-del" onclick="eliminarUsuario('${u.email}')">Eliminar</button></td>
-            </tr>
-        `).join('');
-    }
-
-    // Eliminar usuario
-    async function eliminarUsuario(email) {
-        if (!confirm(`¿Estás seguro de que deseas eliminar al usuario con email: ${email}?`)) return;
-
-        try {
-            const res = await fetch('../Back/delete_user.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email })
-            });
-            const result = await res.json();
-            if (result.status === "success") {
-                cargarUsuarios();
-            } else {
-                alert(result.message);
-            }
-        } catch (e) {
-            alert("Error al intentar eliminar");
-        }
-    }
-
-    // Crear nuevo usuario
     document.getElementById('formCrear').addEventListener('submit', async (e) => {
         e.preventDefault();
         const fd = new FormData();
         fd.append('username', document.getElementById('newUsername').value);
         fd.append('email', document.getElementById('newEmail').value);
         fd.append('password', document.getElementById('newPass').value);
-
-        const res = await fetch('../Back/create_user_admin.php', {
-            method: 'POST',
-            body: fd
-        });
+        const res = await fetch('../Back/create_user_admin.php', { method: 'POST', body: fd });
         const result = await res.json();
-
-        if (result.status === "success") {
-            e.target.reset();
-            cargarUsuarios();
-            alert("Usuario creado correctamente");
-        } else {
-            alert(result.message);
-        }
+        if (result.status === "success") { e.target.reset(); cargarUsuarios(); }
+        else alert(result.message);
     });
 
-    // Buscador en tiempo real
-    document.getElementById('buscador').addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase();
-        const filas = document.querySelectorAll('#listaUsuarios tr');
-        filas.forEach(fila => {
-            fila.style.display = fila.innerText.toLowerCase().includes(term) ? '' : 'none';
+    async function eliminarUsuario(email) {
+        if (!confirm(`¿Eliminar a ${email}?`)) return;
+        await fetch('../Back/delete_user.php', {
+            method: 'POST',
+            body: JSON.stringify({ email })
         });
+        cargarUsuarios();
+    }
+
+    document.getElementById('btnCerrarSesion').addEventListener('click', () => {
+        fetch('../Back/logout.php').finally(() => window.location.replace('login.html'));
     });
 
-    window.onload = cargarUsuarios;
+    window.onload = () => {
+        mostrarNombre();
+        cargarUsuarios();
+    };
 </script>
 </body>
 </html>
