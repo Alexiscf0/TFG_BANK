@@ -2,32 +2,171 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registro Tradicional</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kibo - Crear Cuenta</title>
+    <style>
+        /* PALETA DE COLORES KIBO */
+        :root {
+            --bg: #e0e0e0;
+            --card: #ffffff;
+            --accent: #7986cb;
+            --accent-dark: #5c6bc0;
+            --text-main: #333333;
+        }
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    color: var(--text-main);
+}
+
+        .register-card {
+            background: var(--card);
+            padding: 30px 40px; /* Un poco más compacto verticalmente */
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        /* LOGO CENTRADO Y REESCALADO */
+        .logo-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .logo-container img {
+            width: 110px; /* Tamaño consistente con el login */
+            height: auto;
+            max-height: 110px;
+            object-fit: contain;
+            display: block;
+        }
+
+        h2 {
+            margin: 0 0 20px 0;
+            font-weight: 600;
+            color: #000;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        label {
+            font-size: 13px; /* Un pelín más pequeña para que quepa todo bien */
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input {
+            padding: 11px;
+            margin-bottom: 15px; /* Menos margen porque hay más campos */
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            outline: none;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(121, 134, 203, 0.2);
+        }
+
+        /* BOTONES */
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 5px;
+        }
+
+        button {
+            background-color: var(--accent);
+            color: black;
+            border: none;
+            padding: 14px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--accent-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            text-decoration: none;
+            display: block;
+            padding: 11px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(121, 134, 203, 0.1);
+            color: var(--accent-dark);
+            border-color: var(--accent-dark);
+        }
+
+        p.footer-text {
+            font-size: 13px;
+            margin-top: 15px;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
-<h2>Crear Cuenta</h2>
-<form action="../Back/register.php" method="POST">
-    <label>Nombre de Usuario:</label>
-    <input type="text" name="username" placeholder="Ej: Juanito123" required>
-    <br><br>
 
-    <label>Email:</label>
-    <input type="email" name="email" placeholder="tu@email.com" required>
+<div class="register-card">
+    <div class="logo-container">
+        <img src="../images/KiboSaludo.png" alt="Kibo Logo">
+    </div>
 
-    <br><br>
-    <label>Contraseña:</label>
-    <input type="password" name="password" placeholder="********" required>
-    <br><br>
+    <h2>Crear Cuenta</h2>
+    
+    <form action="../Back/register.php" method="POST">
+        <label>Nombre de Usuario:</label>
+        <input type="text" name="username" placeholder="Ej: Juanito123" required>
 
-    <button type="submit">Registrarse</button>
-</form>
+        <label>Email:</label>
+        <input type="email" name="email" placeholder="tu@email.com" required>
 
-<p>¿Ya tienes cuenta? <a href="../Pages/login.html">Inicia Sesión</a></p>
-</body>
+        <label>Contraseña:</label>
+        <input type="password" name="password" placeholder="********" required>
+
+        <div class="btn-container">
+            <button type="submit">Registrarse</button>
+            <a href="login.html" class="btn-secondary">¿Ya tienes cuenta? Inicia Sesión</a>
+        </div>
+    </form>
+</div>
+
 <script>
     document.querySelector('form').addEventListener('submit', async (e) => {
         e.preventDefault();
-
         const form = e.target;
         const formData = new FormData(form);
 
@@ -37,7 +176,6 @@
                 body: formData
             });
 
-            // Verificamos si la respuesta es exitosa (status 200-299)
             if (!response.ok) throw new Error("Error en el servidor");
 
             const result = await response.json();
@@ -54,4 +192,5 @@
         }
     });
 </script>
+</body>
 </html>
