@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio - Kibo App</title>
+    <title>Inicio - Kibo</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* --- VARIABLES Y CONFIGURACIÓN BASE --- */
@@ -59,10 +59,11 @@
             font-weight: 700;
             color: var(--accent);
             margin-bottom: 30px;
-            padding-left: 10px;
+            padding-left: 47px;
             display: flex;
             align-items: center;
-            gap: 12px; /* Un poco más de espacio para que respire la imagen */
+            gap: 12px;
+            cursor: pointer;/* Un poco más de espacio para que respire la imagen */
         }
 
         /* ESTILO PARA LA IMAGEN DEL LOGO PEQUEÑO */
@@ -218,9 +219,9 @@
 <body>
 
 <aside class="sidebar" id="miSidebar">
-    <div class="brand">
+    <div class="brand" onclick="window.location.href='index.html'">
         <img src="../images/Kibo.png" alt="Kibo Logo">
-        <span>Kibo App</span>
+        <span>Kibo</span>
     </div>
 
     <nav class="menu-items" id="menuLateral">
@@ -265,6 +266,7 @@
         </button>
         <h1>Dashboard</h1>
     </div>
+
 
     <div class="container-dashboard">
         

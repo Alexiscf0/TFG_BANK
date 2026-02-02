@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estadísticas - Kibo App</title>
+    <title>Estadísticas - Kibo</title>
     <style>
         /* --- VARIABLES Y CONFIGURACIÓN BASE --- */
         :root {
@@ -48,11 +48,23 @@
         .sidebar.cerrado { width: 0; padding: 20px 0; opacity: 0; overflow: hidden; }
 
         .brand {
-            font-size: 22px; font-weight: 700; color: var(--accent);
-            margin-bottom: 30px; padding-left: 10px; display: flex; align-items: center; gap: 12px;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 30px;
+            padding-left: 47px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;/* Un poco más de espacio para que respire la imagen */
         }
-        .brand img { height: 32px; width: auto; object-fit: contain; }
 
+        /* ESTILO PARA LA IMAGEN DEL LOGO PEQUEÑO */
+        .brand img {
+            height: 32px; /* Tamaño pequeñito y controlado */
+            width: auto;  /* Mantiene la proporción */
+            object-fit: contain;
+        }
         .menu-items { display: flex; flex-direction: column; gap: 5px; flex-grow: 1; }
 
         .menu-items a {
@@ -156,9 +168,9 @@
 <body>
 
 <aside class="sidebar" id="miSidebar">
-    <div class="brand">
+    <div class="brand" onclick="window.location.href='index.html'">
         <img src="../images/KiboSaludo.png" alt="Kibo Logo">
-        <span>Kibo App</span>
+        <span>Kibo</span>
     </div>
 
     <nav class="menu-items">

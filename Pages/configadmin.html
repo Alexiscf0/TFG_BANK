@@ -67,15 +67,17 @@
             font-weight: 700;
             color: var(--accent);
             margin-bottom: 30px;
-            padding-left: 10px;
+            padding-left: 47px;
             display: flex;
             align-items: center;
             gap: 12px;
+            cursor: pointer;/* Un poco más de espacio para que respire la imagen */
         }
 
+        /* ESTILO PARA LA IMAGEN DEL LOGO PEQUEÑO */
         .brand img {
-            height: 32px;
-            width: auto;
+            height: 32px; /* Tamaño pequeñito y controlado */
+            width: auto;  /* Mantiene la proporción */
             object-fit: contain;
         }
 
@@ -201,9 +203,9 @@
 <body>
 
 <aside class="sidebar" id="miSidebar">
-    <div class="brand">
+    <div class="brand" onclick="window.location.href='index.html'">
         <img src="../images/Kibo.png" alt="Kibo Logo">
-        <span>Kibo App</span>
+        <span>Kibo</span>
     </div>
 
     <nav class="menu-items">
@@ -243,7 +245,7 @@
         <button class="btn-menu" onclick="alternarMenu()">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
         </button>
-        <div class="user-pill">👋 <span id="nombreUsuario">Admin</span></div>
+        <div class="user-pill">Bienvenido  <span id="nombreUsuario">Admin</span>👋</div>
     </div>
 
     <div class="admin-card">
