@@ -55,20 +55,41 @@ Crea "huchas virtuales" para organizar tu dinero. Ya sea para un coche nuevo o p
 
 ---
 
-## ⚙️ Manual de Puesta en Marcha (Para Evaluación)
+## ⚙️ Manual de Puesta en Marcha (Técnico)
 
-> 🛑 **IMPORTANTE:** Siga estos pasos estrictamente para ejecutar el proyecto en local. Tiempo estimado: < 5 minutos.
+> 🛑 **REQUISITO CRÍTICO:** Siga estos pasos en orden exacto. Si la configuración del servidor no es correcta, la aplicación no conectará con la base de datos.
 
-Para probar la aplicación en su entorno local, hemos simplificado el proceso al máximo.
+### 1. Preparación del Entorno (XAMPP)
+Es necesario tener **XAMPP** instalado y el servidor Apache detenido antes de configurar.
 
-### 1. Requisitos Previos
-* Tener instalado el entorno de ejecución estándar (Node.js / Java / Python según corresponda).
-* Conexión a Internet para descargar dependencias.
+1.  Abra el panel de control de XAMPP.
+2.  Haga clic en **Config** (junto a Apache) > **PHP (php.ini)**.
+3.  Se abrirá un archivo de texto. Busque y **descomente** (quite el punto y coma `;` inicial) las siguientes líneas:
+    ```ini
+    extension=zip
+    extension=mongodb
+    ```
+    *(Nota: Si no encuentra `extension=mongodb`, deberá descargar la DLL del driver de MongoDB para PHP y añadirla a la carpeta `xampp/php/ext`, o asegurarse de que su versión de XAMPP la incluye).*
+4.  Guarde el archivo y **Inicie (Start)** el servidor Apache.
 
-### 2. Instalación en 3 Pasos
+### 2. Despliegue del Código
+1.  Descargue o clone este repositorio.
+2.  Mueva la carpeta del proyecto dentro del directorio público de XAMPP:
+    * Ruta típica: `C:\xampp\htdocs\`
+    * El resultado debe ser: `C:\xampp\htdocs\Kibo`
 
-**Paso 1: Descargar el proyecto**
-Abra su terminal y ejecute:
-```bash
-git clone https://github.com/Alexiscf0/TFG_BANK/tree/main
-cd kibo-app
+### 3. Instalación de Dependencias
+Es necesario instalar la librería de conexión a base de datos mediante **Composer**.
+
+1.  Abra una terminal dentro de la carpeta del proyecto (`C:\xampp\htdocs\Kibo`).
+2.  Ejecute el siguiente comando para descargar el driver de MongoDB:
+    ```bash
+    composer require mongodb/mongodb
+    ```
+
+### 4. Ejecución
+Abra su navegador web favorito e introduzca la siguiente URL para iniciar la aplicación:
+
+👉 **[http://localhost/Kibo/Pages/login.html](http://localhost/Kibo/Pages/login.html)**
+
+---
