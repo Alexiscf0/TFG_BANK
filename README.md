@@ -1,4 +1,4 @@
-# 🏔️ Kibo: Finanzas con Propósito
+# 🏔️ Kibo: Ahorro Inteligente
 
 > **Más que una app de gastos, tu copiloto para cumplir metas.**
 
