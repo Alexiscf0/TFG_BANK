@@ -55,40 +55,47 @@ Crea "huchas virtuales" para organizar tu dinero. Ya sea para un coche nuevo o p
 
 ---
 
-## ⚙️ Manual de Puesta en Marcha (Técnico)
+## 🚀 EJECUCIÓN DEL PROYECTO
 
-> 🛑 **REQUISITO CRÍTICO:** Siga estos pasos en orden exacto. Si la configuración del servidor no es correcta, la aplicación no conectará con la base de datos.
+Para su evaluación, dispone de dos métodos de acceso. Se recomienda el **Método A** por su inmediatez.
 
-### 1. Preparación del Entorno (XAMPP)
-Es necesario tener **XAMPP** instalado y el servidor Apache detenido antes de configurar.
+### 🅰️ Método A: Acceso Web (Recomendado)
+El proyecto está desplegado y 100% operativo en la siguiente dirección:
 
-1.  Abra el panel de control de XAMPP.
-2.  Haga clic en **Config** (junto a Apache) > **PHP (php.ini)**.
-3.  Se abrirá un archivo de texto. Busque y **descomente** (quite el punto y coma `;` inicial) las siguientes líneas:
+👉 **[https://tfg.gt.tc/](https://tfg.gt.tc/)**
+
+---
+
+### 🅱️ Método B: Instalación Local (XAMPP)
+> ⏱️ **Tiempo estimado:** < 5 minutos.
+> 🛑 **Requisito:** XAMPP instalado y Composer.
+
+Siga estos pasos estrictamente para asegurar la conexión con la base de datos:
+
+**1. Configuración de XAMPP (Crítico)**
+Antes de arrancar, edite la configuración de PHP:
+* Abra el panel de XAMPP > Click en **Config** (Apache) > **PHP (php.ini)**.
+* Busque y **descomente** (quite el `;` inicial) las siguientes líneas:
     ```ini
     extension=zip
     extension=mongodb
     ```
-    *(Nota: Si no encuentra `extension=mongodb`, deberá descargar la DLL del driver de MongoDB para PHP y añadirla a la carpeta `xampp/php/ext`, o asegurarse de que su versión de XAMPP la incluye).*
-4.  Guarde el archivo y **Inicie (Start)** el servidor Apache.
+* Guarde el archivo y **Arrance (Start)** el servidor Apache.
 
-### 2. Despliegue del Código
-1.  Descargue o clone este repositorio.
-2.  Mueva la carpeta del proyecto dentro del directorio público de XAMPP:
-    * Ruta típica: `C:\xampp\htdocs\`
-    * El resultado debe ser: `C:\xampp\htdocs\Kibo`
+**2. Despliegue de Archivos**
+* Descargue este repositorio.
+* Coloque la carpeta del proyecto dentro de su directorio `htdocs`.
+* Asegúrese de que la ruta quede así: `C:\xampp\htdocs\Kibo`
 
-### 3. Instalación de Dependencias
-Es necesario instalar la librería de conexión a base de datos mediante **Composer**.
-
-1.  Abra una terminal dentro de la carpeta del proyecto (`C:\xampp\htdocs\Kibo`).
-2.  Ejecute el siguiente comando para descargar el driver de MongoDB:
+**3. Dependencias**
+* Abra una terminal dentro de la carpeta `htdocs\Kibo`.
+* Instale el driver de MongoDB ejecutando:
     ```bash
     composer require mongodb/mongodb
     ```
 
-### 4. Ejecución
-Abra su navegador web favorito e introduzca la siguiente URL para iniciar la aplicación:
+**4. Iniciar App**
+Abra su navegador e introduzca la siguiente URL exacta:
 
 👉 **[http://localhost/Kibo/Pages/login.html](http://localhost/Kibo/Pages/login.html)**
 
