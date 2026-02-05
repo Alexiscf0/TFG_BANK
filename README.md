@@ -70,5 +70,5 @@ Para probar la aplicación en su entorno local, hemos simplificado el proceso al
 **Paso 1: Descargar el proyecto**
 Abra su terminal y ejecute:
 ```bash
-git clone [URL_DE_TU_REPOSITORIO]
+git clone https://github.com/Alexiscf0/TFG_BANK/tree/main
 cd kibo-app
