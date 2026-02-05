@@ -36,9 +36,9 @@ Tu app no debería ser fría. Kibo te saluda y te da un diagnóstico rápido:
 
 * A menudo, no es el alquiler ni las compras grandes lo que descuadra el presupuesto, sino esas pequeñas monedas que "no se notan". El café diario, la suscripción que no usas o el snack de media mañana.
 * Kibo cuenta con un sistema específico para detectar estas micro-fugas de dinero:
-* Visibilidad Agregada: Kibo no te regaña por comprar un café de 2€. Pero sí te muestra que ese hábito representa 60€ al mes o 720€ al año.
-* Detección de Patrones: La app identifica gastos repetitivos de bajo importe y los agrupa bajo una lupa especial, permitiéndote decidir si ese gasto realmente te aporta valor o si es solo inercia.
-* Conversión a Metas: Te propone el reto: "¿Y si cambias 2 cafés a la semana por tu viaje a Japón?". Convierte el gasto inconsciente en ahorro consciente.
+* **Visibilidad Agregada:** Kibo no te regaña por comprar un café de 2€. Pero sí te muestra que ese hábito representa 60€ al mes o 720€ al año.
+* **Detección de Patrones:** La app identifica gastos repetitivos de bajo importe y los agrupa bajo una lupa especial, permitiéndote decidir si ese gasto realmente te aporta valor o si es solo inercia.
+* **Conversión a Metas:** Te propone el reto: "¿Y si cambias 2 cafés a la semana por tu viaje a Japón?". Convierte el gasto inconsciente en ahorro consciente.
 
 ---
 
