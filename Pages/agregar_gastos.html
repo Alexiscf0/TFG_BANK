@@ -7,22 +7,17 @@
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; display: flex; flex-direction: column; align-items: center; padding: 20px; }
         .container { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-        h2 { text-align: center; color: #333; }
+        h2 { text-align: center; color: #333; margin-bottom: 25px; }
         .camera-section { text-align: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
         .btn-scan { background: #5c6bc0; color: white; padding: 12px 20px; border-radius: 25px; cursor: pointer; display: inline-block; font-weight: bold; }
         #preview-container { display: none; margin-top: 15px; }
-        #image-preview { max-width: 100%; border-radius: 10px; border: 2px solid #ddd; }
-        .loading { color: #5c6bc0; font-weight: bold; display: none; margin: 10px 0; }
+        #image-preview { max-width: 100%; border-radius: 10px; border: 2px solid #ddd; display: block; margin: 0 auto; }
+        .loading { color: #5c6bc0; font-weight: bold; display: none; margin-top: 10px; text-align: center; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; color: #666; }
         input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
         .btn-save { width: 100%; padding: 12px; background: #2e7d32; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        .btn-save:hover { background: #1b5e20; }
         .btn-back { display: block; text-align: center; margin-top: 15px; text-decoration: none; color: #888; font-size: 14px; }
-
-        /* Colores dinámicos para el tipo */
-        .tipo-gasto { border-left: 5px solid #ef5350; }
-        .tipo-ingreso { border-left: 5px solid #66bb6a; }
     </style>
 </head>
 <body>
@@ -31,82 +26,70 @@
     <h2>📝 Nuevo Movimiento</h2>
 
     <div class="camera-section">
-        <p style="font-size: 14px; color: #666; margin-bottom: 10px;">¿Tienes un ticket? Escanéalo:</p>
         <input type="file" id="ticketInput" accept="image/*" capture="environment" style="display:none;">
         <label for="ticketInput" class="btn-scan">📸 Escanear Ticket</label>
 
         <div id="preview-container">
-            <img id="image-preview">
-            <p id="loading-message" class="loading">🤖 Kibo está leyendo el ticket...</p>
+            <img id="image-preview" src="">
+            <p id="loading-message" class="loading">⚙️ Procesando...</p>
         </div>
     </div>
 
     <form id="gastoForm">
         <div class="form-group">
-            <label>Tipo de movimiento:</label>
+            <label>Tipo:</label>
             <select id="tipo" name="tipo">
-                <option value="Gasto" selected>💸 Gasto</option>
+                <option value="Gasto">💸 Gasto</option>
                 <option value="Ingreso">💰 Ingreso</option>
             </select>
         </div>
-
         <div class="form-group">
-            <label>Comercio / Concepto:</label>
-            <input type="text" id="concepto" name="concepto" placeholder="Ej: Mercadona o Nómina" required>
+            <label>Concepto:</label>
+            <input type="text" id="concepto" name="concepto" required>
         </div>
-
         <div class="form-group">
             <label>Importe (€):</label>
-            <input type="number" id="precio" name="precio" step="0.01" placeholder="0.00" required>
+            <input type="number" id="precio" name="precio" step="0.01" required>
         </div>
-
         <div class="form-group">
             <label>Categoría:</label>
-            <select id="categoria" name="categoria">
-            </select>
+            <select id="categoria" name="categoria"></select>
         </div>
-
         <div class="form-group">
             <label>Fecha:</label>
             <input type="date" id="fecha" name="fecha" required>
         </div>
-
         <button type="submit" class="btn-save">Guardar Movimiento</button>
     </form>
-
     <a href="index.html" class="btn-back">Volver al inicio</a>
 </div>
 
 <script type="module">
-    import { analizarTicket } from '../Api/groq_service.js?v=2026';
+    import { analizarTicket } from '../Api/groq_service.js';
 
     const tipoSelect = document.getElementById('tipo');
     const categoriaSelect = document.getElementById('categoria');
     const ticketInput = document.getElementById('ticketInput');
     const loadingMsg = document.getElementById('loading-message');
+    const previewContainer = document.getElementById('preview-container');
 
-    // Categorías según el tipo
     const categorias = {
-        Gasto: ["🍔 Comida", "🎉 Ocio", "🚌 Transporte", "🏠 Vivienda", "📦 Otros"],
-        Ingreso: ["💼 Nómina", "📈 Inversiones", "🎁 Regalo", "💰 Venta", "➕ Otros Ingresos"]
+        Gasto: ["Comida", "Ocio", "Transporte", "Vivienda", "Otros"],
+        Ingreso: ["Nómina", "Inversiones", "Regalo", "Venta", "Otros Ingresos"]
     };
 
     function actualizarCategorias() {
-        const seleccionado = tipoSelect.value;
         categoriaSelect.innerHTML = "";
-        categorias[seleccionado].forEach(cat => {
-            const option = document.createElement('option');
-            option.value = cat.split(' ')[1]; // Guardamos solo el texto sin emoji
-            option.textContent = cat;
-            categoriaSelect.appendChild(option);
+        categorias[tipoSelect.value].forEach(cat => {
+            const opt = document.createElement('option');
+            opt.value = cat; opt.textContent = cat;
+            categoriaSelect.appendChild(opt);
         });
     }
 
-    // Inicializar categorías y escuchar cambios
     tipoSelect.addEventListener('change', actualizarCategorias);
     actualizarCategorias();
 
-    // 1. Lógica de Escaneo con IA
     ticketInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -115,61 +98,32 @@
         reader.onload = async (event) => {
             const base64 = event.target.result;
             document.getElementById('image-preview').src = base64;
-            document.getElementById('preview-container').style.display = 'block';
+
+            // Estas líneas ya no darán error de null
+            previewContainer.style.display = 'block';
             loadingMsg.style.display = 'block';
-            loadingMsg.innerText = "🤖 Kibo está leyendo el ticket...";
+            loadingMsg.innerText = "🤖 Kibo leyendo...";
 
             try {
-                const datos = await analizarTicket(base64);
-
-                // Si se escanea un ticket, asumimos que es un GASTO
-                tipoSelect.value = "Gasto";
-                actualizarCategorias();
-
-                document.getElementById('concepto').value = datos.concepto || "";
-                if (datos.cantidad) {
-                    const num = datos.cantidad.toString().replace(',', '.').replace(/[^\d.-]/g, '');
-                    document.getElementById('precio').value = parseFloat(num).toFixed(2);
-                }
-
-                // Intentar emparejar categoría de la IA
-                document.getElementById('categoria').value = datos.categoria || "Otros";
-                document.getElementById('fecha').value = datos.fecha || new Date().toISOString().split('T')[0];
-
-                loadingMsg.innerText = "✅ Ticket procesado correctamente";
+                const data = await analizarTicket(base64);
+                document.getElementById('concepto').value = data.concepto || "";
+                document.getElementById('precio').value = data.cantidad || 0;
+                document.getElementById('categoria').value = data.categoria || "Otros";
+                document.getElementById('fecha').value = data.fecha || "";
+                loadingMsg.innerText = "✅ Escaneado";
             } catch (err) {
-                loadingMsg.innerText = "❌ Error al leer el ticket";
-                console.error(err);
+                loadingMsg.innerText = "❌ Error en el escaneo";
             }
         };
         reader.readAsDataURL(file);
     });
 
-    // 2. Lógica de Guardado
-    document.getElementById('gastoForm').addEventListener('submit', async (e) => {
+    document.getElementById('gastoForm').onsubmit = async (e) => {
         e.preventDefault();
-        const formData = new FormData(e.target);
-
-        try {
-            // El backend procesar_gasto.php debe estar preparado para recibir 'tipo'
-            const response = await fetch('../Back/procesar_gasto.php', {
-                method: 'POST',
-                body: formData
-            });
-
-            const result = await response.json();
-
-            if (result.status === "success") {
-                alert(`✨ ${tipoSelect.value} guardado correctamente`);
-                window.location.href = "historial.html";
-            } else {
-                alert("⚠️ Error: " + result.message);
-            }
-        } catch (error) {
-            alert("Fallo de conexión con el servidor");
-        }
-    });
+        const fd = new FormData(e.target);
+        const res = await fetch('../Back/procesar_gasto.php', { method: 'POST', body: fd });
+        if (res.ok) window.location.href = "historial.html";
+    };
 </script>
-
 </body>
 </html>

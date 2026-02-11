@@ -1,1 +1,12 @@
-/vendor/
+
+# .gitignore
+
+# Ignorar la configuración privada con las llaves de las APIs
+Back/config_privada.php
+
+# Ignorar las librerías de MongoDB y Composer
+vendor/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
