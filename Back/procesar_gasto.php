@@ -1,3 +1,4 @@
+
 <?php
 // Back/procesar_gasto.php
 session_start();

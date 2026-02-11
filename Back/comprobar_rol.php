@@ -4,7 +4,6 @@ header('Content-Type: application/json');
 
 echo json_encode([
     'logged_in' => isset($_SESSION['username']),
-    'username'  => $_SESSION['username'] ?? 'Invitado', // Se envía el nombre guardado
-    'role'      => $_SESSION['role'] ?? 'user'
+    'role' => $_SESSION['role'] ?? 'user'
 ]);
-exit();
+
