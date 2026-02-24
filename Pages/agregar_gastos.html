@@ -4,25 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kibo - Registro de Movimientos</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+        /* Reutilizamos tu paleta de colores para las alertas */
+        :root {
+            --accent: #5c6bc0;
+            --success: #2e7d32;
+        }
+
         body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; display: flex; flex-direction: column; align-items: center; padding: 20px; }
         .container { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
         h2 { text-align: center; color: #333; }
         .camera-section { text-align: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
-        .btn-scan { background: #5c6bc0; color: white; padding: 12px 20px; border-radius: 25px; cursor: pointer; display: inline-block; font-weight: bold; }
+        .btn-scan { background: var(--accent); color: white; padding: 12px 20px; border-radius: 25px; cursor: pointer; display: inline-block; font-weight: bold; transition: 0.3s; }
+        .btn-scan:hover { background: #3f51b5; transform: scale(1.05); }
+
         #preview-container { display: none; margin-top: 15px; }
         #image-preview { max-width: 100%; border-radius: 10px; border: 2px solid #ddd; }
-        .loading { color: #5c6bc0; font-weight: bold; display: none; margin: 10px 0; }
+
+        .loading { color: var(--accent); font-weight: bold; display: none; margin: 10px 0; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; color: #666; }
         input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        .btn-save { width: 100%; padding: 12px; background: #2e7d32; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
+
+        .btn-save { width: 100%; padding: 12px; background: var(--success); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-save:hover { background: #1b5e20; }
         .btn-back { display: block; text-align: center; margin-top: 15px; text-decoration: none; color: #888; font-size: 14px; }
-
-        /* Colores dinámicos para el tipo */
-        .tipo-gasto { border-left: 5px solid #ef5350; }
-        .tipo-ingreso { border-left: 5px solid #66bb6a; }
     </style>
 </head>
 <body>
@@ -62,8 +69,7 @@
 
         <div class="form-group">
             <label>Categoría:</label>
-            <select id="categoria" name="categoria">
-            </select>
+            <select id="categoria" name="categoria"></select>
         </div>
 
         <div class="form-group">
@@ -71,7 +77,7 @@
             <input type="date" id="fecha" name="fecha" required>
         </div>
 
-        <button type="submit" class="btn-save">Guardar Movimiento</button>
+        <button type="submit" class="btn-save" id="btnGuardar">Guardar Movimiento</button>
     </form>
 
     <a href="index.html" class="btn-back">Volver al inicio</a>
@@ -84,8 +90,8 @@
     const categoriaSelect = document.getElementById('categoria');
     const ticketInput = document.getElementById('ticketInput');
     const loadingMsg = document.getElementById('loading-message');
+    const btnGuardar = document.getElementById('btnGuardar');
 
-    // Categorías según el tipo
     const categorias = {
         Gasto: ["🍔 Comida", "🎉 Ocio", "🚌 Transporte", "🏠 Vivienda", "📦 Otros"],
         Ingreso: ["💼 Nómina", "📈 Inversiones", "🎁 Regalo", "💰 Venta", "➕ Otros Ingresos"]
@@ -96,17 +102,16 @@
         categoriaSelect.innerHTML = "";
         categorias[seleccionado].forEach(cat => {
             const option = document.createElement('option');
-            option.value = cat.split(' ')[1]; // Guardamos solo el texto sin emoji
+            option.value = cat.split(' ')[1];
             option.textContent = cat;
             categoriaSelect.appendChild(option);
         });
     }
 
-    // Inicializar categorías y escuchar cambios
     tipoSelect.addEventListener('change', actualizarCategorias);
     actualizarCategorias();
 
-    // 1. Lógica de Escaneo con IA
+    // 1. Lógica de Escaneo con IA mejorada
     ticketInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -117,12 +122,19 @@
             document.getElementById('image-preview').src = base64;
             document.getElementById('preview-container').style.display = 'block';
             loadingMsg.style.display = 'block';
-            loadingMsg.innerText = "🤖 Kibo está leyendo el ticket...";
+
+            // Usamos una pequeña notificación Toast para no bloquear la pantalla
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
 
             try {
                 const datos = await analizarTicket(base64);
 
-                // Si se escanea un ticket, asumimos que es un GASTO
                 tipoSelect.value = "Gasto";
                 actualizarCategorias();
 
@@ -132,26 +144,30 @@
                     document.getElementById('precio').value = parseFloat(num).toFixed(2);
                 }
 
-                // Intentar emparejar categoría de la IA
                 document.getElementById('categoria').value = datos.categoria || "Otros";
                 document.getElementById('fecha').value = datos.fecha || new Date().toISOString().split('T')[0];
 
-                loadingMsg.innerText = "✅ Ticket procesado correctamente";
+                loadingMsg.innerText = "✅ ¡Ticket leído!";
+                Toast.fire({ icon: 'success', title: 'Datos extraídos con éxito' });
+
             } catch (err) {
-                loadingMsg.innerText = "❌ Error al leer el ticket";
+                loadingMsg.innerText = "❌ Error en el escaneo";
+                Swal.fire('Error', 'No se pudo leer el ticket correctamente.', 'error');
                 console.error(err);
             }
         };
         reader.readAsDataURL(file);
     });
 
-    // 2. Lógica de Guardado
+    // 2. Lógica de Guardado con SweetAlert2
     document.getElementById('gastoForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+        btnGuardar.disabled = true;
+        btnGuardar.innerText = "Guardando...";
+
         const formData = new FormData(e.target);
 
         try {
-            // El backend procesar_gasto.php debe estar preparado para recibir 'tipo'
             const response = await fetch('../Back/procesar_gasto.php', {
                 method: 'POST',
                 body: formData
@@ -160,16 +176,25 @@
             const result = await response.json();
 
             if (result.status === "success") {
-                alert(`✨ ${tipoSelect.value} guardado correctamente`);
-                window.location.href = "historial.html";
+                Swal.fire({
+                    title: '¡Guardado!',
+                    text: `El ${tipoSelect.value.toLowerCase()} se ha registrado correctamente.`,
+                    icon: 'success',
+                    confirmButtonColor: '#2e7d32'
+                }).then(() => {
+                    window.location.href = "historial.html";
+                });
             } else {
-                alert("⚠️ Error: " + result.message);
+                Swal.fire('Error', result.message, 'error');
+                btnGuardar.disabled = false;
+                btnGuardar.innerText = "Guardar Movimiento";
             }
         } catch (error) {
-            alert("Fallo de conexión con el servidor");
+            Swal.fire('Error de conexión', 'No se pudo conectar con el servidor.', 'warning');
+            btnGuardar.disabled = false;
+            btnGuardar.innerText = "Guardar Movimiento";
         }
     });
 </script>
-
 </body>
 </html>

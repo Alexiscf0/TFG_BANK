@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kibo - Crear Cuenta</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* PALETA DE COLORES KIBO */
         :root {
@@ -14,22 +15,22 @@
             --text-main: #333333;
         }
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg);
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 20px;
-    box-sizing: border-box;
-    color: var(--text-main);
-}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            color: var(--text-main);
+        }
 
         .register-card {
             background: var(--card);
-            padding: 30px 40px; /* Un poco más compacto verticalmente */
+            padding: 30px 40px;
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             width: 100%;
@@ -37,7 +38,6 @@ body {
             text-align: center;
         }
 
-        /* LOGO CENTRADO Y REESCALADO */
         .logo-container {
             margin-bottom: 20px;
             display: flex;
@@ -45,7 +45,7 @@ body {
         }
 
         .logo-container img {
-            width: 110px; /* Tamaño consistente con el login */
+            width: 110px;
             height: auto;
             max-height: 110px;
             object-fit: contain;
@@ -65,14 +65,14 @@ body {
         }
 
         label {
-            font-size: 13px; /* Un pelín más pequeña para que quepa todo bien */
+            font-size: 13px;
             font-weight: bold;
             margin-bottom: 5px;
         }
 
         input {
             padding: 11px;
-            margin-bottom: 15px; /* Menos margen porque hay más campos */
+            margin-bottom: 15px;
             border: 1px solid #ddd;
             border-radius: 6px;
             outline: none;
@@ -85,7 +85,6 @@ body {
             box-shadow: 0 0 0 3px rgba(121, 134, 203, 0.2);
         }
 
-        /* BOTONES */
         .btn-container {
             display: flex;
             flex-direction: column;
@@ -130,12 +129,6 @@ body {
             color: var(--accent-dark);
             border-color: var(--accent-dark);
         }
-
-        p.footer-text {
-            font-size: 13px;
-            margin-top: 15px;
-            color: #666;
-        }
     </style>
 </head>
 <body>
@@ -146,7 +139,7 @@ body {
     </div>
 
     <h2>Crear Cuenta</h2>
-    
+
     <form action="../Back/register.php" method="POST">
         <label>Nombre de Usuario:</label>
         <input type="text" name="username" placeholder="Ej: Juanito123" required>
@@ -158,7 +151,7 @@ body {
         <input type="password" name="password" placeholder="********" required>
 
         <div class="btn-container">
-            <button type="submit">Registrarse</button>
+            <button type="submit" id="submit-btn">Registrarse</button>
             <a href="login.html" class="btn-secondary">¿Ya tienes cuenta? Inicia Sesión</a>
         </div>
     </form>
@@ -168,7 +161,12 @@ body {
     document.querySelector('form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const form = e.target;
+        const btn = document.getElementById('submit-btn');
         const formData = new FormData(form);
+
+        // Feedback visual: desactivamos el botón mientras procesa
+        btn.disabled = true;
+        btn.innerText = 'Procesando...';
 
         try {
             const response = await fetch(form.action, {
@@ -176,19 +174,40 @@ body {
                 body: formData
             });
 
-            if (!response.ok) throw new Error("Error en el servidor");
-
             const result = await response.json();
 
             if (result.status === "success") {
-                alert(result.message);
-                window.location.href = result.redirect;
+                Swal.fire({
+                    title: '¡Cuenta creada!',
+                    text: result.message,
+                    icon: 'success',
+                    confirmButtonColor: '#7986cb',
+                    timer: 2500,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = result.redirect;
+                });
             } else {
-                alert(result.message);
+                Swal.fire({
+                    title: 'Atención',
+                    text: result.message,
+                    icon: 'warning',
+                    confirmButtonColor: '#7986cb'
+                });
+                // Reactivamos el botón si hay error para que el usuario pueda corregir
+                btn.disabled = false;
+                btn.innerText = 'Registrarse';
             }
         } catch (error) {
             console.error("Error:", error);
-            alert("No se pudo completar el registro. Inténtalo más tarde.");
+            Swal.fire({
+                title: 'Error técnico',
+                text: 'No se pudo conectar con el servidor. Inténtalo más tarde.',
+                icon: 'error',
+                confirmButtonColor: '#7986cb'
+            });
+            btn.disabled = false;
+            btn.innerText = 'Registrarse';
         }
     });
 </script>
