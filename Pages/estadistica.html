@@ -5,40 +5,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estadísticas - Kibo</title>
     <style>
-        /* (Se mantienen tus estilos CSS originales) */
-        :root { --bg: #f0f2f5; --card: #ffffff; --accent: #7986cb; --accent-light: #e8eaf6; --text-main: #333333; --text-muted: #666666; --sidebar-width: 260px; --sidebar-bg: #ffffff; --state-good: #2e7d32; --state-bad: #c62828; }
+        /* --- VARIABLES Y CONFIGURACIÓN BASE --- */
+        :root {
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --accent: #7986cb;
+            --accent-light: #e8eaf6;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --sidebar-width: 260px;
+            --sidebar-bg: #ffffff;
+            --state-good: #2e7d32;
+            --state-bad: #c62828;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; height: 100vh; display: flex; overflow: hidden; background: var(--bg); color: var(--text-main); }
-        .sidebar { width: var(--sidebar-width); background-color: var(--sidebar-bg); display: flex; flex-direction: column; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); padding: 20px 15px; border-right: 1px solid rgba(0,0,0,0.05); flex-shrink: 0; z-index: 100; }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            height: 100vh; display: flex; overflow: hidden;
+            background: var(--bg); color: var(--text-main);
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: var(--sidebar-width); background-color: var(--sidebar-bg);
+            display: flex; flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            padding: 20px 15px; border-right: 1px solid rgba(0,0,0,0.05);
+            flex-shrink: 0; z-index: 100;
+        }
         .sidebar.cerrado { width: 0; padding: 20px 0; opacity: 0; overflow: hidden; }
-        .brand { font-size: 22px; font-weight: 700; color: var(--accent); margin-bottom: 30px; padding-left: 47px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+
+        .brand {
+            font-size: 22px; font-weight: 700; color: var(--accent);
+            margin-bottom: 30px; padding-left: 47px; display: flex;
+            align-items: center; gap: 12px; cursor: pointer;
+        }
         .brand img { height: 32px; width: auto; object-fit: contain; }
+
         .menu-items { display: flex; flex-direction: column; gap: 5px; flex-grow: 1; }
-        .menu-items a { display: flex; align-items: center; text-decoration: none; color: var(--text-muted); font-size: 15px; font-weight: 500; padding: 12px 15px; border-radius: 50px; transition: all 0.2s ease; white-space: nowrap; }
+        .menu-items a {
+            display: flex; align-items: center; text-decoration: none;
+            color: var(--text-muted); font-size: 15px; font-weight: 500;
+            padding: 12px 15px; border-radius: 50px; transition: all 0.2s ease;
+        }
         .menu-items a svg { width: 20px; height: 20px; margin-right: 12px; fill: currentColor; opacity: 0.7; }
-        .menu-items a:hover { background-color: var(--accent-light); color: var(--accent); }
-        .menu-items a.activo-page { background-color: var(--accent-light); color: var(--accent); font-weight: 700; }
+        .menu-items a:hover, .menu-items a.activo-page { background-color: var(--accent-light); color: var(--accent); }
+        .menu-items a.activo-page { font-weight: 700; }
+
         #linkAdmin { color: #b71c1c; display: none; margin-top: 10px; background-color: #fff0f0; }
+
         .sidebar-footer { margin-top: auto; border-top: 1px solid #eee; padding-top: 15px; }
-        .btn-logout { display: flex; align-items: center; justify-content: center; width: 100%; padding: 12px; background-color: transparent; color: var(--text-muted); border: 1px solid #eee; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; text-decoration: none; }
+        .btn-logout {
+            display: flex; align-items: center; justify-content: center; width: 100%;
+            padding: 12px; background-color: transparent; color: var(--text-muted);
+            border: 1px solid #eee; border-radius: 12px; font-weight: 600;
+            cursor: pointer; transition: 0.3s; text-decoration: none;
+        }
+
+        /* --- CONTENIDO --- */
         .main-content { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
         .container-stats { max-width: 1100px; width: 100%; margin: 0 auto; }
-        .header-stats { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px; }
+
+        .header-stats { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 20px; }
         .header-left { display: flex; align-items: center; gap: 20px; }
         h1 { font-size: 1.8rem; color: #222; margin: 0; }
-        .btn-menu { font-size: 24px; cursor: pointer; background: white; border: none; color: #555; padding: 8px 12px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s; }
+
+        .btn-menu {
+            font-size: 24px; cursor: pointer; background: white; border: none;
+            color: #555; padding: 8px 12px; border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
         .filtros-tiempo { background: white; padding: 5px; border-radius: 50px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; gap: 5px; }
         .filtros-tiempo button { background: transparent; border: none; color: #666; padding: 8px 20px; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 14px; transition: 0.3s; }
         .filtros-tiempo button.activo { background-color: var(--accent); color: white; }
+
+        /* SELECTOR DE PERIODO */
+        #selector-periodo {
+            margin-bottom: 25px; background: white; padding: 12px 25px;
+            border-radius: 50px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex; align-items: center; gap: 15px; align-self: flex-start;
+        }
+        #selector-periodo span { font-size: 14px; font-weight: bold; color: var(--text-muted); }
+
+        #inputFechaRef, #selectAnio {
+            border: none; outline: none; font-size: 16px; color: var(--accent);
+            font-weight: bold; cursor: pointer; background: transparent;
+        }
+
+        /* CARDS KPI */
         .kpi-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-bottom: 30px; }
         .card { background: var(--card); padding: 30px; border-radius: 16px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); text-align: center; border: 1px solid rgba(255,255,255,0.5); }
-        .card h3 { font-size: 1rem; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .card .numero { font-size: 2.5rem; font-weight: 800; color: var(--text-main); letter-spacing: -1px; }
+        .card h3 { font-size: 0.9rem; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .card .numero { font-size: 2.3rem; font-weight: 800; color: var(--text-main); }
         .card .positivo { color: var(--state-good); }
         .card .negativo { color: var(--state-bad); }
+
+        /* LISTA CATEGORÍAS */
         .top-categories { background: var(--card); width: 100%; padding: 30px; border-radius: 16px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
         .top-categories h2 { font-size: 1.2rem; margin-bottom: 25px; color: #444; border-bottom: 1px solid #f0f0f0; padding-bottom: 15px; }
-        .cat-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-radius: 12px; margin-bottom: 10px; background-color: #fafafa; }
+        .cat-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-radius: 12px; margin-bottom: 10px; background-color: #fafafa; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -51,24 +119,19 @@
 
     <nav class="menu-items">
         <a href="index.html">
-            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-            Inicio
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> Inicio
         </a>
         <a href="historial.html">
-            <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
-            Historial
+            <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg> Historial
         </a>
         <a href="estadistica.html" class="activo-page">
-            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
-            Estadísticas
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg> Estadísticas
         </a>
         <a href="graficos.html">
-            <svg viewBox="0 0 24 24"><path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z"/></svg>
-            Hucha (Gráficos)
+            <svg viewBox="0 0 24 24"><path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z"/></svg> Hucha
         </a>
         <a href="configadmin.html" id="linkAdmin">
-            <svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M20 19c0-2.21-3.58-4-8-4s-8 1.79-8 4v2h16v-2z" fill="currentColor"/></svg>
-            Panel Admin
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg> Panel Admin
         </a>
     </nav>
 
@@ -84,36 +147,39 @@
                 <button class="btn-menu" onclick="alternarMenu()">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
                 </button>
-                <h1>Resumen Mensual</h1>
+                <h1>Análisis de Gastos</h1>
             </div>
             <div class="filtros-tiempo">
-                <button>Semana</button>
-                <button class="activo">Mes</button>
-                <button>Año</button>
+                <button id="btnSemana">Semana</button>
+                <button class="activo" id="btnMes">Mes</button>
+                <button id="btnAño">Año</button>
             </div>
+        </div>
+
+        <div id="selector-periodo">
+            <span id="labelPeriodo">📅 Seleccionar Mes:</span>
+            <input type="month" id="inputFechaRef">
+            <select id="selectAnio" style="display:none;"></select>
         </div>
 
         <div class="kpi-container">
             <div class="card">
                 <h3>Ingresos</h3>
-                <div id="kpi-ingresos" class="numero positivo">Cargando...</div>
+                <div id="kpi-ingresos" class="numero positivo">0,00 €</div>
             </div>
             <div class="card">
                 <h3>Gastos</h3>
-                <div id="kpi-gastos" class="numero negativo">Cargando...</div>
+                <div id="kpi-gastos" class="numero negativo">0,00 €</div>
             </div>
             <div class="card">
                 <h3>Ahorro Neto</h3>
-                <div id="kpi-ahorro" class="numero" style="color: var(--accent);">Cargando...</div>
+                <div id="kpi-ahorro" class="numero">0,00 €</div>
             </div>
         </div>
 
         <div class="top-categories">
-            <h2>Categorías con más gasto</h2>
+            <h2>Desglose por Categorías</h2>
             <div id="lista-categorias">
-                <div class="cat-item"><span>🍽️ Restaurantes</span><span>- 120.00 €</span></div>
-                <div class="cat-item"><span>🛒 Supermercado</span><span>- 85.50 €</span></div>
-                <div class="cat-item"><span>⛽ Gasolina</span><span>- 60.00 €</span></div>
             </div>
         </div>
     </div>
@@ -121,74 +187,118 @@
 
 <script src="../Api/nav_check.js"></script>
 <script>
+    let periodoActual = 'mes';
+    const inputFecha = document.getElementById('inputFechaRef');
+    const selectAnio = document.getElementById('selectAnio');
+    const labelPeriodo = document.getElementById('labelPeriodo');
+
     function alternarMenu() {
         document.getElementById('miSidebar').classList.toggle('cerrado');
     }
 
-    document.getElementById('btnCerrarSesion').addEventListener('click', (e) => {
-        e.preventDefault();
-        window.location.replace('login.html');
+    // 1. POPULAR EL LISTADO DE AÑOS (Ahora hasta 2010)
+    function popularAnios() {
+        const anioActual = new Date().getFullYear();
+        selectAnio.innerHTML = "";
+        // Hemos cambiado el límite a 2010
+        for (let i = anioActual; i >= 2010; i--) {
+            const option = document.createElement("option");
+            option.value = i;
+            option.textContent = i;
+            selectAnio.appendChild(option);
+        }
+    }
+
+    // 2. LÓGICA DE FILTROS
+    document.querySelectorAll('.filtros-tiempo button').forEach(boton => {
+        boton.addEventListener('click', function() {
+            document.querySelector('.filtros-tiempo button.activo').classList.remove('activo');
+            this.classList.add('activo');
+
+            const texto = this.innerText.toLowerCase();
+            const hoy = new Date();
+
+            if (texto.includes('semana')) {
+                periodoActual = 'semana';
+                labelPeriodo.innerText = "📅 Seleccionar Día:";
+                inputFecha.style.display = "block";
+                selectAnio.style.display = "none";
+                inputFecha.type = 'date';
+                inputFecha.value = hoy.toISOString().split('T')[0];
+            } else if (texto.includes('año')) {
+                periodoActual = 'ano';
+                labelPeriodo.innerText = "📅 Seleccionar Año:";
+                inputFecha.style.display = "none";
+                selectAnio.style.display = "block";
+                selectAnio.value = hoy.getFullYear();
+            } else {
+                periodoActual = 'mes';
+                labelPeriodo.innerText = "📅 Seleccionar Mes:";
+                inputFecha.style.display = "block";
+                selectAnio.style.display = "none";
+                inputFecha.type = 'month';
+                inputFecha.value = hoy.toISOString().substring(0, 7);
+            }
+            ejecutarCarga();
+        });
     });
 
-    window.addEventListener('load', async () => {
-        const kpis = document.querySelectorAll('.numero');
+    inputFecha.addEventListener('change', ejecutarCarga);
+    selectAnio.addEventListener('change', ejecutarCarga);
+
+    function ejecutarCarga() {
+        let valor;
+        if (periodoActual === 'ano') {
+            valor = `${selectAnio.value}-01-01`;
+        } else {
+            valor = inputFecha.value;
+            if (periodoActual === 'mes' && valor.length === 7) valor = `${valor}-01`;
+        }
+        if (valor) cargarEstadisticas(periodoActual, valor);
+    }
+
+    // 3. CARGA DE DATOS
+    async function cargarEstadisticas(periodo, fechaRef) {
         const listaCat = document.getElementById('lista-categorias');
-
         try {
-            const response = await fetch('../Back/api_stats.php');
-
-            if (response.status === 401) {
-                window.location.href = 'login.html';
-                return;
-            }
+            const response = await fetch(`../Back/api_stats.php?periodo=${periodo}&fecha_ref=${fechaRef}`);
+            if (response.status === 401) { window.location.href = 'login.html'; return; }
 
             const data = await response.json();
+            if (data.status !== "success") throw new Error(data.message);
 
-            if (data.status === "error") {
-                throw new Error(data.message);
-            }
+            const formatMoney = (val) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(val);
 
-            const formatMoney = (val) => new Intl.NumberFormat('es-ES', {
-                style: 'currency', currency: 'EUR'
-            }).format(val);
-
-            // Actualizar Totales
             document.getElementById('kpi-ingresos').innerText = "+ " + formatMoney(data.ingresos);
             document.getElementById('kpi-gastos').innerText = "- " + formatMoney(data.gastos);
-
             const ahorroElem = document.getElementById('kpi-ahorro');
             ahorroElem.innerText = (data.ahorro >= 0 ? "+ " : "") + formatMoney(data.ahorro);
             ahorroElem.style.color = data.ahorro >= 0 ? "var(--state-good)" : "var(--state-bad)";
 
-            // Actualizar Lista de Categorías Reales
             listaCat.innerHTML = "";
-
-            const iconos = {
-                "Comida": "🍔", "Ocio": "🎉", "Transporte": "🚌",
-                "Vivienda": "🏠", "Otros": "📦"
-            };
+            const iconos = { "Comida": "🍔", "Ocio": "🎉", "Transporte": "🚌", "Vivienda": "🏠", "Otros": "📦" };
 
             const entries = Object.entries(data.categorias);
             if (entries.length === 0) {
-                listaCat.innerHTML = '<div class="cat-item"><span>No hay gastos registrados aún</span></div>';
+                listaCat.innerHTML = '<div class="cat-item"><span>Sin movimientos en este periodo.</span></div>';
             } else {
-                for (const [nombre, total] of entries) {
-                    const icono = iconos[nombre] || "💰";
+                entries.forEach(([nombre, total]) => {
                     const item = document.createElement('div');
                     item.className = 'cat-item';
-                    item.innerHTML = `
-                        <span>${icono} ${nombre}</span>
-                        <span>- ${formatMoney(total)}</span>
-                    `;
+                    item.innerHTML = `<span>${iconos[nombre] || "💰"} ${nombre}</span><span>- ${formatMoney(total)}</span>`;
                     listaCat.appendChild(item);
-                }
+                });
             }
-
-        } catch (error) {
-            console.error("Error en estadísticas:", error);
-            kpis.forEach(el => el.innerText = "Error");
-            listaCat.innerHTML = `<div class="cat-item" style="color:red;">Error: ${error.message}</div>`;
+        } catch (e) {
+            console.error("Error:", e);
         }
+    }
+
+    window.addEventListener('load', () => {
+        popularAnios();
+        const hoy = new Date();
+        inputFecha.value = hoy.toISOString().substring(0, 7);
+        cargarEstadisticas('mes', hoy.toISOString().split('T')[0]);
     });
 </script>
 </body>
