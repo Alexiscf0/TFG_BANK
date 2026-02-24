@@ -1,57 +1,60 @@
 <?php
-// Iniciamos sesión para acceder al email del usuario
 session_start();
-ob_clean();
+// Limpiamos cualquier salida previa para evitar errores de JSON
+if (ob_get_length()) ob_clean();
 header('Content-Type: application/json');
 
-// Verificar si el usuario está logueado
 if (!isset($_SESSION['user_email'])) {
     http_response_code(401);
-    echo json_encode(['error' => 'Sesión no iniciada']);
+    echo json_encode(['status' => 'error', 'message' => 'Sesión no iniciada']);
     exit;
 }
 
-$userEmail = $_SESSION['user_email'];
-
 require_once __DIR__ . '/../vendor/autoload.php';
+use MongoDB\Client;
 
 $uri = "mongodb+srv://alexiscastelln_db_user:LOLOKRIKO@cluster0.zfxempk.mongodb.net/?appName=Cluster0";
 
 try {
-    $client = new MongoDB\Client($uri);
-    $dbSeleccionada = "KIBO";
-    $coleccionSeleccionada = "movimientos";
-    $collection = $client->$dbSeleccionada->$coleccionSeleccionada;
+    // Añadimos tlsInsecure por si tu servidor local tiene problemas de certificados
+    $client = new Client($uri, [], ["tlsInsecure" => true]);
+    $collection = $client->KIBO->movimientos;
 
-    // FILTRO: Solo buscamos documentos donde user_email coincida con la sesión
-    $filtro = ['user_email' => $userEmail];
-    $cursor = $collection->find($filtro);
+    $userEmail = $_SESSION['user_email'];
+    $cursor = $collection->find(['user_email' => $userEmail]);
 
     $ingresos = 0;
     $gastos = 0;
+    $categoriasGasto = [];
 
     foreach ($cursor as $doc) {
         $valor = floatval($doc['precio'] ?? 0);
-        $tipo = strtolower($doc['tipo'] ?? '');
+        $tipo = strtolower($doc['tipo'] ?? 'gasto');
+        $cat = $doc['categoria'] ?? 'Otros';
 
         if ($tipo === 'ingreso') {
             $ingresos += $valor;
-        } elseif ($tipo === 'gasto') {
-            $gastos += $valor;
+        } else {
+            $montoAbs = abs($valor);
+            $gastos += $montoAbs;
+            // Agrupamos por categoría
+            $categoriasGasto[$cat] = ($categoriasGasto[$cat] ?? 0) + $montoAbs;
         }
     }
 
-    $ahorroNeto = $ingresos + $gastos;
+    // Ordenar de mayor a menor gasto
+    arsort($categoriasGasto);
 
     echo json_encode([
+        'status' => 'success',
         'ingresos' => $ingresos,
         'gastos' => $gastos,
-        'ahorro' => $ahorroNeto,
-        'usuario' => $userEmail // Para confirmar en el frontend
+        'ahorro' => $ingresos - $gastos,
+        'categorias' => $categoriasGasto
     ]);
 
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
+    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }
 exit;
