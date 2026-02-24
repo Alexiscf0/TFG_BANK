@@ -131,36 +131,63 @@
     });
 
     window.addEventListener('load', async () => {
+        const kpis = document.querySelectorAll('.numero');
+        const listaCat = document.getElementById('lista-categorias');
+
         try {
             const response = await fetch('../Back/api_stats.php');
 
-            // Si el servidor dice que no hay sesión, mandamos al login
             if (response.status === 401) {
                 window.location.href = 'login.html';
                 return;
             }
 
-            if (!response.ok) throw new Error('Error al obtener datos');
-
             const data = await response.json();
+
+            if (data.status === "error") {
+                throw new Error(data.message);
+            }
 
             const formatMoney = (val) => new Intl.NumberFormat('es-ES', {
                 style: 'currency', currency: 'EUR'
             }).format(val);
 
-            // Actualizar la interfaz
+            // Actualizar Totales
             document.getElementById('kpi-ingresos').innerText = "+ " + formatMoney(data.ingresos);
-            document.getElementById('kpi-gastos').innerText = "- " + formatMoney(Math.abs(data.gastos));
+            document.getElementById('kpi-gastos').innerText = "- " + formatMoney(data.gastos);
 
             const ahorroElem = document.getElementById('kpi-ahorro');
             ahorroElem.innerText = (data.ahorro >= 0 ? "+ " : "") + formatMoney(data.ahorro);
             ahorroElem.style.color = data.ahorro >= 0 ? "var(--state-good)" : "var(--state-bad)";
 
-            console.log("Mostrando estadísticas para:", data.usuario);
+            // Actualizar Lista de Categorías Reales
+            listaCat.innerHTML = "";
+
+            const iconos = {
+                "Comida": "🍔", "Ocio": "🎉", "Transporte": "🚌",
+                "Vivienda": "🏠", "Otros": "📦"
+            };
+
+            const entries = Object.entries(data.categorias);
+            if (entries.length === 0) {
+                listaCat.innerHTML = '<div class="cat-item"><span>No hay gastos registrados aún</span></div>';
+            } else {
+                for (const [nombre, total] of entries) {
+                    const icono = iconos[nombre] || "💰";
+                    const item = document.createElement('div');
+                    item.className = 'cat-item';
+                    item.innerHTML = `
+                        <span>${icono} ${nombre}</span>
+                        <span>- ${formatMoney(total)}</span>
+                    `;
+                    listaCat.appendChild(item);
+                }
+            }
 
         } catch (error) {
-            console.error("Fallo en la carga:", error);
-            document.querySelectorAll('.numero').forEach(el => el.innerText = "Error");
+            console.error("Error en estadísticas:", error);
+            kpis.forEach(el => el.innerText = "Error");
+            listaCat.innerHTML = `<div class="cat-item" style="color:red;">Error: ${error.message}</div>`;
         }
     });
 </script>
