@@ -12,9 +12,8 @@ export const api_algoan = {
 // 2. CONFIGURACIÓN DE GROQ (IA para lectura de Tickets)
 // He dejado el modelo "vision" que es el que puede leer fotos
 export const api_groq = {
-    key: "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",
-    url: "https://api.groq.com/openai/v1/chat/completions",
-    // CAMBIAMOS EL MODELO AQUÍ:
+    // Eliminamos la 'key' de aquí por seguridad
+    url: "../Back/proxy_groq.php", // Ahora apuntamos al proxy local
     modelo: "meta-llama/llama-4-scout-17b-16e-instruct"
 };
 
