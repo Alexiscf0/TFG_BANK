@@ -29,14 +29,14 @@
         }
 
         /* --- SIDEBAR ESTILO MODERNO --- */
-        .sidebar { 
-            width: var(--sidebar-width); 
-            background-color: var(--sidebar-bg); 
-            display: flex; 
-            flex-direction: column; 
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); 
-            padding: 20px 15px; 
-            border-right: 1px solid rgba(0,0,0,0.05); 
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            padding: 20px 15px;
+            border-right: 1px solid rgba(0,0,0,0.05);
             flex-shrink: 0;
             z-index: 100;
         }
@@ -52,29 +52,27 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            cursor: pointer;/* Un poco más de espacio para que respire la imagen */
+            cursor: pointer;
         }
 
-        /* ESTILO PARA LA IMAGEN DEL LOGO PEQUEÑO */
         .brand img {
-            height: 32px; /* Tamaño pequeñito y controlado */
-            width: auto;  /* Mantiene la proporción */
+            height: 32px;
+            width: auto;
             object-fit: contain;
         }
         .menu-items { display: flex; flex-direction: column; gap: 5px; flex-grow: 1; }
 
-        .menu-items a { 
-            display: flex; align-items: center; text-decoration: none; 
+        .menu-items a {
+            display: flex; align-items: center; text-decoration: none;
             color: var(--text-muted); font-size: 15px; font-weight: 500;
-            padding: 12px 15px; border-radius: 50px; 
+            padding: 12px 15px; border-radius: 50px;
             transition: all 0.2s ease; white-space: nowrap;
         }
 
         .menu-items a svg { width: 20px; height: 20px; margin-right: 12px; fill: currentColor; opacity: 0.7; }
 
         .menu-items a:hover { background-color: var(--accent-light); color: var(--accent); }
-        
-        /* CLASE PARA EL ENLACE ACTIVO */
+
         .menu-items a.activo-page { background-color: var(--accent-light); color: var(--accent); font-weight: 700; }
 
         #linkAdmin { color: #b71c1c; display: none; margin-top: 10px; background-color: #fff0f0; }
@@ -96,7 +94,7 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            overflow: hidden; 
+            overflow: hidden;
         }
 
         .header-top {
@@ -106,8 +104,8 @@
 
         .header-left { display: flex; align-items: center; gap: 20px; }
 
-        .btn-menu { 
-            font-size: 24px; cursor: pointer; background: white; border: none; 
+        .btn-menu {
+            font-size: 24px; cursor: pointer; background: white; border: none;
             color: #555; padding: 8px 12px; border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s;
         }
@@ -115,7 +113,6 @@
 
         h1 { font-size: 1.8rem; color: #222; margin: 0; }
 
-        /* SELECTOR DE FILTRO MODERNO */
         .filtro-select {
             padding: 10px 20px; border: 1px solid #ddd; border-radius: 50px;
             background-color: white; cursor: pointer; min-width: 220px;
@@ -124,13 +121,12 @@
         }
         .filtro-select:hover { border-color: var(--accent); }
 
-        /* --- ESTILOS DE LA TABLA --- */
         .table-wrapper {
             background-color: var(--card);
             border-radius: 16px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.05);
             overflow: auto;
-            flex-grow: 1; 
+            flex-grow: 1;
             margin-bottom: 10px;
             border: 1px solid rgba(255,255,255,0.5);
         }
@@ -140,7 +136,6 @@
             text-align: left; min-width: 600px;
         }
 
-        /* Cabecera Fija */
         thead th {
             position: sticky; top: 0; z-index: 10;
             background-color: var(--accent);
@@ -155,15 +150,18 @@
         tbody tr:last-child td { border-bottom: none; }
         tbody tr:hover { background-color: #fafafa; }
 
-        /* Etiquetas y Montos */
         .monto-positivo { color: #2e7d32; font-weight: bold; background: #e8f5e9; padding: 5px 10px; border-radius: 8px; }
         .monto-negativo { color: #c62828; font-weight: bold; background: #ffebee; padding: 5px 10px; border-radius: 8px; }
-        
-        .tag { 
-            font-size: 12px; padding: 5px 12px; border-radius: 20px; 
+
+        .tag {
+            font-size: 12px; padding: 5px 12px; border-radius: 20px;
             background-color: #f5f5f5; color: #666; font-weight: 600;
             border: 1px solid #eee;
         }
+
+        /* Estilo para el cursor en la cabecera interactiva */
+        #th-fecha { cursor: pointer; user-select: none; }
+        #th-fecha:hover { background-color: #5c6bc0; }
 
         @media (max-width: 700px) {
             .header-top { flex-direction: column; align-items: flex-start; gap: 15px; }
@@ -180,33 +178,22 @@
 
     <nav class="menu-items" id="menuLateral">
         <a href="index.html" id="nav-inicio">
-            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-            Inicio
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> Inicio
         </a>
-
-        <a href="historial.html" id="nav-historial">
-            <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
-            Historial
+        <a href="historial.html" id="nav-historial" class="activo-page">
+            <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg> Historial
         </a>
-
         <a href="estadistica.html" id="nav-estadistica">
-            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
-            Estadísticas
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg> Estadísticas
         </a>
-
         <a href="presupuestos.html" id="nav-presupuestos">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
-            Presupuestos
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg> Presupuestos
         </a>
-
         <a href="graficos.html" id="nav-hucha">
-            <svg viewBox="0 0 24 24"><path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z"/></svg>
-            Hucha
+            <svg viewBox="0 0 24 24"><path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z"/></svg> Hucha
         </a>
-
         <a href="configadmin.html" id="linkAdmin">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
-            Panel Admin
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg> Panel Admin
         </a>
     </nav>
 
@@ -216,7 +203,7 @@
 </aside>
 
 <main class="main-content">
-    
+
     <div class="header-top">
         <div class="header-left">
             <button class="btn-menu" onclick="alternarMenu()">
@@ -224,7 +211,7 @@
             </button>
             <h1>Historial de Movimientos</h1>
         </div>
-        
+
         <select id="filtroCategoria" class="filtro-select">
             <option value="Todas">📂 Todas las categorías</option>
             <option value="Comida">🍽️ Comida</option>
@@ -239,14 +226,13 @@
         <table>
             <thead>
             <tr>
-                <th>Fecha</th>
+                <th id="th-fecha" title="Click para ordenar">Fecha 🔽</th>
                 <th>Concepto / Descripción</th>
                 <th>Categoría</th>
                 <th>Cantidad</th>
             </tr>
             </thead>
-            <tbody id="tabla-movimientos-body">
-                </tbody>
+            <tbody id="tabla-movimientos-body"></tbody>
         </table>
     </div>
 </main>
@@ -254,6 +240,7 @@
 <script src="../Api/nav_check.js"></script>
 <script>
     let todosLosMovimientos = [];
+    let ordenAscendente = false; // Por defecto: más reciente primero
 
     function alternarMenu() {
         document.getElementById('miSidebar').classList.toggle('cerrado');
@@ -267,6 +254,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
         const tablaBody = document.getElementById('tabla-movimientos-body');
         const filtroSelect = document.getElementById('filtroCategoria');
+        const thFecha = document.getElementById('th-fecha');
 
         try {
             const response = await fetch('../Back/movimientos.php');
@@ -279,18 +267,49 @@
             }
 
             todosLosMovimientos = datos;
-            renderizarTabla(todosLosMovimientos);
+
+            // Ordenamos inicialmente por defecto (reciente a antiguo)
+            ordenarMovimientos();
+
+            // Evento para alternar orden al clickar cabecera
+            thFecha.addEventListener('click', () => {
+                ordenAscendente = !ordenAscendente;
+                ordenarMovimientos();
+            });
 
             filtroSelect.addEventListener('change', () => {
-                const cat = filtroSelect.value;
-                const filtrados = (cat === "Todas") ? todosLosMovimientos : todosLosMovimientos.filter(m => m.categoria === cat);
-                renderizarTabla(filtrados);
+                aplicarFiltrosYRenderizar();
             });
 
         } catch (error) {
             tablaBody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Error al conectar con el servidor.</td></tr>`;
         }
     });
+
+    function ordenarMovimientos() {
+        todosLosMovimientos.sort((a, b) => {
+            // Criterio 1: Fecha del ticket
+            const compFecha = a.fecha.localeCompare(b.fecha);
+
+            if (compFecha !== 0) {
+                return ordenAscendente ? compFecha : -compFecha;
+            }
+
+            // Criterio 2: Desempate por ID (orden cronológico de inserción)
+            // Usamos localeCompare porque los IDs de MongoDB son strings comparables
+            return ordenAscendente ? a.id.localeCompare(b.id) : b.id.localeCompare(a.id);
+        });
+
+        const thFecha = document.getElementById('th-fecha');
+        thFecha.innerText = ordenAscendente ? 'Fecha 🔼' : 'Fecha 🔽';
+        aplicarFiltrosYRenderizar();
+    }
+
+    function aplicarFiltrosYRenderizar() {
+        const cat = document.getElementById('filtroCategoria').value;
+        const filtrados = (cat === "Todas") ? todosLosMovimientos : todosLosMovimientos.filter(m => m.categoria === cat);
+        renderizarTabla(filtrados);
+    }
 
     function renderizarTabla(lista) {
         const tablaBody = document.getElementById('tabla-movimientos-body');
@@ -304,7 +323,7 @@
         lista.forEach(mov => {
             const tr = document.createElement('tr');
             const monto = parseFloat(mov.precio || mov.cantidad || 0);
-            
+
             const claseMonto = monto >= 0 ? 'monto-positivo' : 'monto-negativo';
             const simbolo = monto > 0 ? '+' : '';
 
