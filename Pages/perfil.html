@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - Kibo</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* --- VARIABLES Y CONFIGURACIÓN BASE (Sincronizado con index.html) --- */
+        :root {
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --accent: #7986cb;
+            --accent-light: #e8eaf6;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --sidebar-width: 260px;
+            --sidebar-bg: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+            background: var(--bg);
+            color: var(--text-main);
+        }
+
+        /* --- SIDEBAR IDÉNTICO AL RESTO DE LA APP --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            padding: 20px 15px;
+            border-right: 1px solid rgba(0,0,0,0.05);
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 30px;
+            padding-left: 47px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .brand img { height: 32px; width: auto; object-fit: contain; }
+
+        .menu-items { display: flex; flex-direction: column; gap: 5px; flex-grow: 1; }
+
+        .menu-items a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 15px;
+            font-weight: 500;
+            padding: 12px 15px;
+            border-radius: 50px; /* Forma de píldora */
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .menu-items a svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            fill: currentColor;
+            opacity: 0.7;
+        }
+
+        /* Hover y Clase Activa para que se vea como en tus imágenes */
+        .menu-items a:hover, .menu-items a.activo-page {
+            background-color: var(--accent-light);
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        #linkAdmin {
+            display: none;
+            color: #b71c1c;
+            margin-top: 10px;
+            background-color: #fff0f0;
+        }
+
+        .sidebar-footer { margin-top: auto; border-top: 1px solid #eee; padding-top: 15px; }
+
+        .btn-logout {
+            display: flex; align-items: center; justify-content: center; width: 100%;
+            padding: 12px; background-color: transparent; color: var(--text-muted);
+            border: 1px solid #eee; border-radius: 12px; font-weight: 600; cursor: pointer;
+            transition: 0.3s; text-decoration: none;
+        }
+        .btn-logout:hover { background-color: #ffebee; color: #d32f2f; border-color: #ffcdd2; }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+        .profile-card { background: var(--card); padding: 35px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 100%; max-width: 500px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
+        input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; outline: none; }
+        .btn-save { width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 50px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar" id="miSidebar">
+    <div class="brand" onclick="window.location.href='index.html'">
+        <img src="../images/Kibo.png" alt="Kibo Logo">
+        <span>Kibo</span>
+    </div>
+
+    <nav class="menu-items">
+        <a href="index.html">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> Inicio
+        </a>
+        <a href="historial.html">
+            <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg> Historial
+        </a>
+        <a href="estadistica.html">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg> Estadísticas
+        </a>
+        <a href="presupuestos.html">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg> Presupuestos
+        </a>
+        <a href="graficos.html">
+            <svg viewBox="0 0 24 24"><path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z"/></svg> Hucha
+        </a>
+        <a href="configadmin.html" id="linkAdmin">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg> Panel Admin
+        </a>
+        <a href="perfil.html" class="activo-page">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> Mi Perfil
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <a href="#" id="btnCerrarSesion" class="btn-logout">Cerrar Sesión</a>
+    </div>
+</aside>
+
+<main class="main-content">
+    <div class="profile-card">
+        <h1>Configuración de Perfil</h1>
+        <form id="formPerfil">
+            <div class="form-group">
+                <label>Nombre de Usuario Actual</label>
+                <input type="text" id="displayUsername" disabled style="background: #f9f9f9; color: #999;">
+            </div>
+            <div class="form-group">
+                <label>Nuevo Nombre de Usuario</label>
+                <input type="text" name="username" id="inputUsername" placeholder="Introduce el nuevo nombre">
+            </div>
+            <div class="form-group">
+                <label>Nueva Contraseña</label>
+                <input type="password" name="password" placeholder="Dejar en blanco para no cambiar">
+            </div>
+            <button type="submit" class="btn-save">Guardar Cambios</button>
+        </form>
+    </div>
+</main>
+
+<script src="../Api/nav_check.js"></script>
+<script>
+    window.onload = async () => {
+        try {
+            const res = await fetch('../Back/comprobar_rol.php');
+            const data = await res.json();
+            if (!data.logged_in) { window.location.href = 'login.html'; return; }
+            document.getElementById('displayUsername').value = data.username;
+            document.getElementById('inputUsername').value = data.username;
+        } catch (e) { console.error("Error cargando perfil"); }
+    };
+
+    document.getElementById('formPerfil').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        try {
+            const res = await fetch('../Back/update_profile.php', { method: 'POST', body: formData });
+            const r = await res.json();
+            if (r.status === 'success') {
+                Swal.fire({ title: '¡Actualizado!', text: r.message, icon: 'success', confirmButtonColor: '#7986cb' }).then(() => location.reload());
+            } else {
+                Swal.fire({ title: 'Aviso', text: r.message, icon: 'info', confirmButtonColor: '#7986cb' });
+            }
+        } catch (e) { Swal.fire('Error', 'No se pudo conectar con el servidor', 'error'); }
+    });
+</script>
+</body>
+</html>
