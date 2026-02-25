@@ -2,6 +2,7 @@
 session_start();
 header('Content-Type: application/json');
 
+// Verificación de sesión
 if (!isset($_SESSION['user_email'])) {
     echo json_encode(["status" => "error", "message" => "Sesión no iniciada"]);
     exit;
@@ -17,7 +18,7 @@ try {
 
     $userEmail = $_SESSION['user_email'];
 
-    // ORDEN ABSOLUTO: Fecha del ticket DESC y luego _id DESC (orden real de inserción)
+    // Criterio: Fecha del ticket DESC y _id DESC (orden cronológico real)
     $opciones = [
         'limit' => 5,
         'sort' => [
@@ -31,7 +32,7 @@ try {
     $movimientos = [];
     foreach ($cursor as $doc) {
         $movimientos[] = [
-            "id"        => (string)$doc['_id'], // Pasamos el ID para desempatar en el front
+            "id"        => (string)$doc['_id'],
             "concepto"  => $doc['concepto'] ?? 'Sin concepto',
             "precio"    => (float)($doc['precio'] ?? 0),
             "categoria" => $doc['categoria'] ?? 'Otros',

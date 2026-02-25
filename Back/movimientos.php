@@ -19,7 +19,7 @@ try {
     $movimientos = [];
     foreach ($cursor as $doc) {
         $movimientos[] = [
-            "id"        => (string)$doc['_id'], // Campo vital para el desempate
+            "id"        => (string)$doc['_id'],
             "fecha"     => $doc['fecha'] ?? 'N/A',
             "concepto"  => $doc['concepto'] ?? 'Sin descripción',
             "categoria" => $doc['categoria'] ?? 'General',
