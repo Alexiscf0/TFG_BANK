@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurar Presupuestos - Kibo</title>
+    <style>
+        /* --- VARIABLES Y CONFIGURACIÓN BASE --- */
+        :root {
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --accent: #7986cb;
+            --accent-light: #e8eaf6;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --sidebar-width: 260px;
+            --sidebar-bg: #ffffff;
+            --state-good: #2e7d32;
+            --state-bad: #c62828;
+            --danger-bg: #ffebee;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+            background: var(--bg);
+            color: var(--text-main);
+        }
+
+        /* --- SIDEBAR UNIFICADO --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            padding: 20px 15px;
+            border-right: 1px solid rgba(0,0,0,0.05);
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 30px;
+            padding-left: 47px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .brand img { height: 32px; width: auto; object-fit: contain; }
+
+        .menu-items { display: flex; flex-direction: column; gap: 5px; flex-grow: 1; }
+
+        .menu-items a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 15px;
+            font-weight: 500;
+            padding: 12px 15px;
+            border-radius: 50px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .menu-items a svg { width: 20px; height: 20px; margin-right: 12px; fill: currentColor; opacity: 0.7; }
+
+        .menu-items a:hover, .menu-items a.activo-page {
+            background-color: var(--accent-light);
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        #linkAdmin {
+            color: #b71c1c;
+            display: none;
+            margin-top: 10px;
+            background-color: #fff0f0;
+        }
+
+        .sidebar-footer { margin-top: auto; border-top: 1px solid #eee; padding-top: 15px; }
+
+        .btn-logout {
+            display: flex; align-items: center; justify-content: center; width: 100%;
+            padding: 12px; background-color: transparent; color: var(--text-muted);
+            border: 1px solid #eee; border-radius: 12px; font-weight: 600; cursor: pointer;
+            transition: 0.3s; text-decoration: none;
+        }
+
+        .btn-logout:hover { background-color: #ffebee; color: #d32f2f; border-color: #ffcdd2; }
+
+        /* --- CONTENIDO --- */
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+
+        .container-presupuesto {
+            max-width: 600px; width: 100%; background: var(--card);
+            padding: 30px; border-radius: 16px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+
+        h1 { margin-bottom: 25px; color: var(--text-main); text-align: center; font-size: 1.8rem; }
+
+        .form-group { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
+        label { font-weight: 600; color: var(--text-muted); font-size: 14px; }
+
+        select, input { padding: 12px; border-radius: 10px; border: 1px solid #ddd; outline: none; font-size: 16px; transition: 0.3s; }
+        select:focus, input:focus { border-color: var(--accent); }
+
+        .btn-save {
+            background: var(--accent); color: white; border: none; padding: 14px;
+            border-radius: 50px; font-weight: 700; cursor: pointer; transition: 0.3s;
+            margin-top: 10px; width: 100%; font-size: 16px;
+        }
+        .btn-save:hover { background: #5c6bc0; transform: translateY(-2px); }
+
+        /* LISTA DE LÍMITES */
+        .lista-limites { margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px; }
+        .lista-limites h2 { font-size: 1.2rem; margin-bottom: 15px; color: var(--text-muted); }
+
+        .limite-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px; border-bottom: 1px solid #fafafa;
+            background: #fdfdfd; border-radius: 12px; margin-bottom: 8px;
+            transition: 0.2s;
+        }
+
+        .limite-info b { color: var(--text-main); }
+
+        .btn-delete {
+            background: var(--danger-bg); color: var(--state-bad); border: 1px solid #ffcdd2;
+            padding: 6px 15px; border-radius: 50px; cursor: pointer;
+            font-weight: 700; font-size: 13px; transition: 0.3s;
+        }
+        .btn-delete:hover { background: var(--state-bad); color: white; }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar" id="miSidebar">
+    <div class="brand" onclick="window.location.href='index.html'">
+        <img src="../images/Kibo.png" alt="Kibo Logo">
+        <span>Kibo</span>
+    </div>
+    <nav class="menu-items">
+        <a href="index.html"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> Inicio</a>
+        <a href="historial.html"><svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg> Historial</a>
+        <a href="estadistica.html"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg> Estadísticas</a>
+        <a href="presupuestos.html" class="activo-page"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg> Presupuestos</a>
+        <a href="graficos.html"><svg viewBox="0 0 24 24"><path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z"/></svg> Hucha</a>
+        <a href="configadmin.html" id="linkAdmin"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg> Panel Admin</a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="#" id="btnCerrarSesion" class="btn-logout">Cerrar Sesión</a>
+    </div>
+</aside>
+
+<main class="main-content">
+    <div class="container-presupuesto">
+        <h1>Configurar Límites</h1>
+        <form id="formPresupuesto">
+            <div class="form-group">
+                <label>Categoría</label>
+                <select id="categoria" name="categoria" required>
+                    <option value="Comida">🍔 Comida</option>
+                    <option value="Ocio">🎉 Ocio</option>
+                    <option value="Transporte">🚌 Transporte</option>
+                    <option value="Vivienda">🏠 Vivienda</option>
+                    <option value="Otros">📦 Otros</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Límite Mensual (€)</label>
+                <input type="number" id="limite" name="limite" step="0.01" placeholder="Ej: 100.00" required>
+            </div>
+            <button type="submit" class="btn-save">Guardar Presupuesto</button>
+        </form>
+
+        <div class="lista-limites">
+            <h2>Límites Actuales</h2>
+            <div id="displayLimites">Cargando...</div>
+        </div>
+    </div>
+</main>
+
+<script src="../Api/nav_check.js"></script>
+<script>
+    async function cargarLimites() {
+        try {
+            const res = await fetch('../Back/get_presupuestos.php');
+            const data = await res.json();
+            const container = document.getElementById('displayLimites');
+
+            if(data.status === "success") {
+                if(data.data.length === 0) {
+                    container.innerHTML = '<p style="color:#999; text-align:center;">No hay límites configurados.</p>';
+                    return;
+                }
+                container.innerHTML = data.data.map(l => `
+                    <div class="limite-item">
+                        <div class="limite-info">
+                            <b>${l.categoria}</b>:
+                            <span style="color:var(--accent); font-weight:bold;">${parseFloat(l.limite_mensual).toFixed(2)} €</span>
+                        </div>
+                        <button class="btn-delete" onclick="eliminarLimite('${l.categoria}')">Eliminar</button>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p style="color:red;">Error al cargar datos.</p>';
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    async function eliminarLimite(cat) {
+        if (!confirm(`¿Estás seguro de que deseas eliminar el presupuesto para ${cat}?`)) return;
+
+        const formData = new FormData();
+        formData.append('categoria', cat);
+
+        try {
+            const res = await fetch('../Back/eliminar_presupuesto.php', { method: 'POST', body: formData });
+            const result = await res.json();
+            if (result.status === "success") {
+                cargarLimites();
+            } else {
+                alert("❌ Error: " + result.message);
+            }
+        } catch (e) { alert("❌ Error de conexión."); }
+    }
+
+    document.getElementById('formPresupuesto').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        try {
+            const res = await fetch('../Back/guardar_presupuesto.php', { method: 'POST', body: formData });
+            const result = await res.json();
+            if(result.status === "success") {
+                cargarLimites();
+                e.target.reset();
+            } else { alert("❌ " + result.message); }
+        } catch (e) { alert("❌ Error de conexión."); }
+    });
+
+    document.getElementById('btnCerrarSesion').addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.replace('login.html');
+    });
+
+    window.onload = cargarLimites;
+</script>
+</body>
+</html>

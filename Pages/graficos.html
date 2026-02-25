@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hucha - Kibo App</title>
     <style>
-        /* --- ESTILOS BASE (Mismos que el resto del proyecto) --- */
+        /* --- VARIABLES Y CONFIGURACIÓN BASE --- */
         :root {
             --bg: #f0f2f5;
             --card: #ffffff;
@@ -15,27 +15,40 @@
             --text-muted: #666666;
             --sidebar-width: 260px;
             --sidebar-bg: #ffffff;
+            --state-good: #2e7d32;
+            --state-bad: #c62828;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body { 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            height: 100vh; 
-            display: flex; 
-            overflow: hidden; 
-            background: var(--bg); 
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+            background: var(--bg);
             color: var(--text-main);
         }
 
-        /* --- SIDEBAR --- */
-        .sidebar { 
-            width: var(--sidebar-width); background-color: var(--sidebar-bg); 
-            display: flex; flex-direction: column; transition: all 0.4s ease; 
-            padding: 20px 15px; border-right: 1px solid rgba(0,0,0,0.05); 
-            flex-shrink: 0; z-index: 100;
+        /* --- SIDEBAR UNIFICADO --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            padding: 20px 15px;
+            border-right: 1px solid rgba(0,0,0,0.05);
+            flex-shrink: 0;
+            z-index: 100;
         }
-        .sidebar.cerrado { width: 0; padding: 20px 0; opacity: 0; overflow: hidden; }
+
+        .sidebar.cerrado {
+            width: 0;
+            padding: 20px 0;
+            opacity: 0;
+            overflow: hidden;
+        }
 
         .brand {
             font-size: 22px;
@@ -46,45 +59,91 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            cursor: pointer;/* Un poco más de espacio para que respire la imagen */
+            cursor: pointer;
         }
 
-        /* ESTILO PARA LA IMAGEN DEL LOGO PEQUEÑO */
         .brand img {
-            height: 32px; /* Tamaño pequeñito y controlado */
-            width: auto;  /* Mantiene la proporción */
+            height: 32px;
+            width: auto;
             object-fit: contain;
         }
-        .menu-items { display: flex; flex-direction: column; gap: 5px; flex-grow: 1; }
-        .menu-items a { 
-            display: flex; align-items: center; text-decoration: none; 
-            color: var(--text-muted); font-size: 15px; font-weight: 500;
-            padding: 12px 15px; border-radius: 50px; transition: all 0.2s ease; 
-        }
-        .menu-items a svg { width: 20px; height: 20px; margin-right: 12px; fill: currentColor; opacity: 0.7; }
-        .menu-items a:hover { background-color: var(--accent-light); color: var(--accent); }
-        .menu-items a.activo-page { background-color: var(--accent-light); color: var(--accent); font-weight: 700; }
 
-        .sidebar-footer { margin-top: auto; border-top: 1px solid #eee; padding-top: 15px; }
-        .btn-logout {
-            display: flex; align-items: center; justify-content: center; width: 100%;
-            padding: 12px; background-color: transparent; color: var(--text-muted);
-            border: 1px solid #eee; border-radius: 12px; font-weight: 600; cursor: pointer;
-            transition: 0.3s; text-decoration: none;
+        .menu-items {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex-grow: 1;
         }
+
+        .menu-items a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 15px;
+            font-weight: 500;
+            padding: 12px 15px;
+            border-radius: 50px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .menu-items a svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            fill: currentColor;
+            opacity: 0.7;
+        }
+
+        .menu-items a:hover, .menu-items a.activo-page {
+            background-color: var(--accent-light);
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        #linkAdmin {
+            color: #b71c1c;
+            display: none;
+            margin-top: 10px;
+            background-color: #fff0f0;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        .btn-logout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 1px solid #eee;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
         .btn-logout:hover { background-color: #ffebee; color: #d32f2f; border-color: #ffcdd2; }
-        #linkAdmin { color: #b71c1c; display: none; margin-top: 10px; background-color: #fff0f0; }
 
         /* --- CONTENIDO PRINCIPAL --- */
         .main-content { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
 
         .header-top { width: 100%; max-width: 800px; display: flex; align-items: center; margin-bottom: 20px; }
-        .btn-menu { 
-            font-size: 24px; cursor: pointer; background: white; border: none; 
+
+        .btn-menu {
+            font-size: 24px; cursor: pointer; background: white; border: none;
             color: #555; padding: 8px 12px; border-radius: 8px; margin-right: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s;
         }
-        .btn-menu:hover { background: #f5f5f5; }
+
         h1 { font-size: 1.8rem; color: #222; margin: 0; }
 
         /* --- ESTILOS DE LA HUCHA (Piscina) --- */
@@ -101,7 +160,6 @@
             border: 1px solid rgba(255,255,255,0.8);
         }
 
-        /* Input de Meta */
         .meta-container {
             text-align: center; margin-bottom: 40px; width: 100%;
             background: #fafafa; padding: 15px; border-radius: 15px;
@@ -117,82 +175,74 @@
         .meta-input-group input:focus { border-bottom-color: var(--accent); }
         .currency-symbol { font-size: 28px; font-weight: 800; color: var(--accent); }
 
-        /* Escena Visual */
         .escena-container { position: relative; width: 100%; max-width: 350px; display: flex; flex-direction: column; align-items: center; margin-bottom: 30px; }
-        
-        .robot-img { 
-            width: 160px; height: auto; margin-bottom: -25px; margin-left: -40px; 
-            z-index: 10; filter: drop-shadow(2px 5px 5px rgba(0,0,0,0.15)); 
+
+        .robot-img {
+            width: 160px; height: auto; margin-bottom: -25px; margin-left: -40px;
+            z-index: 10; filter: drop-shadow(2px 5px 5px rgba(0,0,0,0.15));
             transition: transform 0.3s ease;
         }
-        .robot-img:hover { transform: translateY(-5px) rotate(-2deg); }
 
-        .piscina-container { 
-            position: relative; width: 100%; height: 220px; 
-            border: 6px solid #555; background-color: var(--accent-light); 
-            border-radius: 0 0 12px 12px; overflow: hidden; 
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.05); 
+        .piscina-container {
+            position: relative; width: 100%; height: 220px;
+            border: 6px solid #555; background-color: var(--accent-light);
+            border-radius: 0 0 12px 12px; overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
         }
 
-        .dinero-liquido { 
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; 
-            background-image: url('../images/billetes.png'); 
-            background-repeat: repeat; background-size: 40px auto; 
-            transition: height 1s cubic-bezier(0.4, 0, 0.2, 1); 
-            border-top: 3px solid rgba(255,255,255,0.8); 
+        .dinero-liquido {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 0%;
+            background-image: url('../images/billetes.png');
+            background-repeat: repeat; background-size: 40px auto;
+            transition: height 1s cubic-bezier(0.4, 0, 0.2, 1);
+            border-top: 3px solid rgba(255,255,255,0.8);
         }
 
-        /* Controles Inferiores */
         .controls-area { width: 100%; display: flex; flex-direction: column; gap: 15px; }
-        
-        .input-cantidad-wrapper { position: relative; }
+
         .input-cantidad-wrapper input {
             width: 100%; padding: 15px; border-radius: 50px; border: 1px solid #ddd;
             font-size: 16px; outline: none; transition: 0.3s; text-align: center;
         }
-        .input-cantidad-wrapper input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(121, 134, 203, 0.2); }
+        .input-cantidad-wrapper input:focus { border-color: var(--accent); }
 
         .stats-row { display: flex; justify-content: space-between; font-weight: bold; padding: 0 15px; color: #555; font-size: 14px; }
         .stats-row span.val { color: var(--state-good); font-size: 18px; }
 
-        .btn-update { 
-            width: 100%; background: var(--accent); color: white; padding: 15px; 
-            border: none; border-radius: 50px; font-weight: 700; cursor: pointer; 
-            font-size: 16px; box-shadow: 0 4px 10px rgba(121, 134, 203, 0.4); 
-            transition: 0.3s; 
+        .btn-update {
+            width: 100%; background: var(--accent); color: white; padding: 15px;
+            border: none; border-radius: 50px; font-weight: 700; cursor: pointer;
+            font-size: 16px; box-shadow: 0 4px 10px rgba(121, 134, 203, 0.4);
+            transition: 0.3s;
         }
         .btn-update:hover { background-color: #5c6bc0; transform: translateY(-2px); }
 
-        .btn-reset { 
-            background: none; border: none; color: #999; font-size: 13px; 
-            cursor: pointer; text-decoration: underline; margin-top: 5px; 
+        .btn-reset {
+            background: none; border: none; color: #999; font-size: 13px;
+            cursor: pointer; text-decoration: underline; margin-top: 5px;
         }
-        .btn-reset:hover { color: var(--state-bad); }
 
         /* Popup */
-        .popup-overlay { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.7); z-index: 200; justify-content: center; align-items: center; 
-            backdrop-filter: blur(4px); 
+        .popup-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 200; justify-content: center; align-items: center;
+            backdrop-filter: blur(4px);
         }
-        .popup-contenido { 
-            background: white; padding: 40px; border-radius: 20px; text-align: center; 
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        .popup-contenido {
+            background: white; padding: 40px; border-radius: 20px; text-align: center;
             box-shadow: 0 20px 50px rgba(0,0,0,0.2);
         }
-        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
     </style>
 </head>
 <body>
 
 <aside class="sidebar" id="miSidebar">
     <div class="brand" onclick="window.location.href='index.html'">
-        <img src="../images/KiboSaludo.png" alt="Kibo Logo">
+        <img src="../images/Kibo.png" alt="Kibo Logo">
         <span>Kibo</span>
     </div>
 
-    <nav class="menu-items">
+    <nav class="menu-items" id="menuLateral">
         <a href="index.html">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> Inicio
         </a>
@@ -202,14 +252,14 @@
         <a href="estadistica.html">
             <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg> Estadísticas
         </a>
-        
+        <a href="presupuestos.html">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg> Presupuestos
+        </a>
         <a href="graficos.html" class="activo-page">
-            <svg viewBox="0 0 24 24"><path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z"/></svg>
-            Hucha
+            <svg viewBox="0 0 24 24"><path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z"/></svg> Hucha
         </a>
         <a href="configadmin.html" id="linkAdmin">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
-            Panel Admin
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg> Panel Admin
         </a>
     </nav>
 
@@ -219,7 +269,6 @@
 </aside>
 
 <main class="main-content">
-    
     <div class="header-top">
         <button class="btn-menu" onclick="alternarMenu()">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
@@ -228,14 +277,10 @@
     </div>
 
     <div class="hucha-wrapper">
-        
         <div class="meta-container">
             <label>🎯 MI META ACTUAL</label>
             <div class="meta-input-group">
-                <input type="number" id="input-meta" value="1000"
-                    onfocus="this.value=''"
-                    onblur="if(this.value=='') this.value='1000'"
-                    onchange="actualizarAhorro()">
+                <input type="number" id="input-meta" value="1000" onfocus="this.value=''" onblur="if(this.value=='') this.value='1000'" onchange="actualizarAhorro()">
                 <span class="currency-symbol">€</span>
             </div>
         </div>
@@ -252,15 +297,12 @@
                 <span>Progreso: <span id="texto-porcentaje" style="color:#7986cb;">0%</span></span>
                 <span>Ahorrado: <span id="texto-dinero" class="val">0.00€</span></span>
             </div>
-
             <div class="input-cantidad-wrapper">
-                <input type="number" id="input-cantidad" placeholder="¿Cuánto ahorras hoy? (Ej: 20)" onfocus="this.value=''">
+                <input type="number" id="input-cantidad" placeholder="¿Cuánto ahorras hoy?" onfocus="this.value=''">
             </div>
-
             <button class="btn-update" onclick="actualizarAhorro()">¡Echar a la hucha!</button>
             <button class="btn-reset" onclick="resetearAhorro()">Vaciar hucha</button>
         </div>
-
     </div>
 </main>
 
@@ -283,7 +325,6 @@
         window.location.replace('login.html');
     });
 
-    // LÓGICA DE LA PISCINA (Mantenida intacta pero limpia)
     let acumuladoTotal = 0;
 
     window.onload = async () => {
@@ -302,11 +343,8 @@
         const metaInput = document.getElementById('input-meta');
         const meta = parseFloat(metaInput.value) || 1000;
         const cantidad = parseFloat(document.getElementById('input-cantidad').value) || 0;
-
         if (meta <= 0) return;
-
         acumuladoTotal += cantidad;
-
         try {
             await fetch('../Back/save_savings.php', {
                 method: 'POST',
@@ -314,7 +352,6 @@
                 body: JSON.stringify({ meta: meta, acumulado: acumuladoTotal })
             });
         } catch (e) { console.error("Error al guardar"); }
-
         renderizarPiscina(meta);
         document.getElementById('input-cantidad').value = '';
     }
@@ -322,9 +359,7 @@
     function renderizarPiscina(meta) {
         let porcentaje = (acumuladoTotal / meta) * 100;
         let visual = Math.min(porcentaje, 100);
-
         if (porcentaje >= 100) mostrarExito();
-
         document.getElementById('barra-dinero').style.height = visual + '%';
         document.getElementById('texto-porcentaje').innerText = Math.floor(porcentaje) + '%';
         document.getElementById('texto-dinero').innerText = acumuladoTotal.toFixed(2) + '€';
@@ -346,6 +381,5 @@
     function mostrarExito() { document.getElementById('popupExito').style.display = 'flex'; }
     function cerrarPopup() { document.getElementById('popupExito').style.display = 'none'; }
 </script>
-
 </body>
 </html>

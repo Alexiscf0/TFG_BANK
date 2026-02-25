@@ -17,7 +17,7 @@
             .catch(() => window.location.replace('login.html'));
     </script>
     <style>
-        /* --- VARIABLES Y CONFIGURACIÓN BASE (IGUAL QUE INDEX) --- */
+        /* --- VARIABLES Y CONFIGURACIÓN BASE --- */
         :root {
             --bg: #f0f2f5;
             --card: #ffffff;
@@ -42,7 +42,7 @@
             color: var(--text-main);
         }
 
-        /* --- SIDEBAR IGUALADO --- */
+        /* --- SIDEBAR --- */
         .sidebar {
             width: var(--sidebar-width);
             background-color: var(--sidebar-bg);
@@ -55,12 +55,7 @@
             z-index: 100;
         }
 
-        .sidebar.cerrado {
-            width: 0;
-            padding: 20px 0;
-            opacity: 0;
-            overflow: hidden;
-        }
+        .sidebar.cerrado { width: 0; padding: 20px 0; opacity: 0; overflow: hidden; }
 
         .brand {
             font-size: 22px;
@@ -71,22 +66,12 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            cursor: pointer;/* Un poco más de espacio para que respire la imagen */
+            cursor: pointer;
         }
 
-        /* ESTILO PARA LA IMAGEN DEL LOGO PEQUEÑO */
-        .brand img {
-            height: 32px; /* Tamaño pequeñito y controlado */
-            width: auto;  /* Mantiene la proporción */
-            object-fit: contain;
-        }
+        .brand img { height: 32px; width: auto; object-fit: contain; }
 
-        .menu-items {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            flex-grow: 1;
-        }
+        .menu-items { display: flex; flex-direction: column; gap: 5px; flex-grow: 1; }
 
         .menu-items a {
             display: flex;
@@ -101,13 +86,7 @@
             white-space: nowrap;
         }
 
-        .menu-items a svg {
-            width: 20px;
-            height: 20px;
-            margin-right: 12px;
-            fill: currentColor;
-            opacity: 0.7;
-        }
+        .menu-items a svg { width: 20px; height: 20px; margin-right: 12px; fill: currentColor; opacity: 0.7; }
 
         .menu-items a:hover, .menu-items a.activo-page {
             background-color: var(--accent-light);
@@ -116,18 +95,14 @@
 
         .menu-items a.activo-page { font-weight: 700; }
 
-        /* Botón especial Admin en rojo dentro del menú */
+        /* Botón Admin resaltado */
         #linkAdminActivo {
             color: #b71c1c;
             background-color: #fff0f0;
             margin-top: 10px;
         }
 
-        .sidebar-footer {
-            margin-top: auto;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-        }
+        .sidebar-footer { margin-top: auto; border-top: 1px solid #eee; padding-top: 15px; }
 
         .btn-logout {
             display: flex;
@@ -178,7 +153,6 @@
             color: var(--accent);
         }
 
-        /* TABLAS Y FORMULARIOS */
         .admin-card {
             background: var(--card);
             padding: 30px;
@@ -210,28 +184,22 @@
 
     <nav class="menu-items">
         <a href="index.html">
-            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-            Inicio
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> Inicio
         </a>
-
         <a href="historial.html">
-            <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
-            Historial
+            <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg> Historial
         </a>
-
         <a href="estadistica.html">
-            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
-            Estadísticas
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg> Estadísticas
         </a>
-
+        <a href="presupuestos.html">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg> Presupuestos
+        </a>
         <a href="graficos.html">
-            <svg viewBox="0 0 24 24"><path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z"/></svg>
-            Hucha (Gráficos)
+            <svg viewBox="0 0 24 24"><path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z"/></svg> Hucha
         </a>
-
         <a href="configadmin.html" class="activo-page" id="linkAdminActivo">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
-            Panel Admin
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg> Panel Admin
         </a>
     </nav>
 
@@ -245,7 +213,7 @@
         <button class="btn-menu" onclick="alternarMenu()">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
         </button>
-        <div class="user-pill">Bienvenido  <span id="nombreUsuario">Admin</span>👋</div>
+        <div class="user-pill">Bienvenido <span id="nombreUsuario">Admin</span> 👋</div>
     </div>
 
     <div class="admin-card">
@@ -275,14 +243,15 @@
                     <th>Acciones</th>
                 </tr>
                 </thead>
-                <tbody id="listaUsuarios">
-                </tbody>
+                <tbody id="listaUsuarios"></tbody>
             </table>
         </div>
     </div>
 </main>
 
 <script>
+    let usuariosRaw = []; // Almacén para búsqueda local
+
     function alternarMenu() {
         document.getElementById('miSidebar').classList.toggle('cerrado');
     }
@@ -292,18 +261,33 @@
             const res = await fetch('../Back/get_all_users.php');
             const r = await res.json();
             if (r.status === "success") {
-                const tbody = document.getElementById('listaUsuarios');
-                tbody.innerHTML = r.data.map(u => `
-                    <tr>
-                        <td><strong>${u.username}</strong></td>
-                        <td>${u.email}</td>
-                        <td>${u.fecha}</td>
-                        <td><button class="btn-del" onclick="eliminarUsuario('${u.email}')">Eliminar</button></td>
-                    </tr>
-                `).join('');
+                usuariosRaw = r.data;
+                renderizarUsuarios(usuariosRaw);
             }
         } catch (e) { console.error("Error cargando usuarios"); }
     }
+
+    function renderizarUsuarios(lista) {
+        const tbody = document.getElementById('listaUsuarios');
+        tbody.innerHTML = lista.map(u => `
+            <tr>
+                <td><strong>${u.username}</strong></td>
+                <td>${u.email}</td>
+                <td>${u.fecha}</td>
+                <td><button class="btn-del" onclick="eliminarUsuario('${u.email}')">Eliminar</button></td>
+            </tr>
+        `).join('');
+    }
+
+    // Lógica de búsqueda
+    document.getElementById('buscador').addEventListener('input', (e) => {
+        const busqueda = e.target.value.toLowerCase();
+        const filtrados = usuariosRaw.filter(u =>
+            u.username.toLowerCase().includes(busqueda) ||
+            u.email.toLowerCase().includes(busqueda)
+        );
+        renderizarUsuarios(filtrados);
+    });
 
     async function eliminarUsuario(email) {
         if (!confirm(`¿Estás seguro de que quieres eliminar a ${email}?`)) return;
@@ -323,8 +307,14 @@
         fd.append('password', document.getElementById('newPass').value);
 
         const res = await fetch('../Back/create_user_admin.php', { method: 'POST', body: fd });
-        cargarUsuarios();
-        e.target.reset();
+        const r = await res.json();
+        if(r.status === "success") {
+            alert("Usuario creado");
+            cargarUsuarios();
+            e.target.reset();
+        } else {
+            alert("Error: " + r.message);
+        }
     });
 
     document.getElementById('btnCerrarSesion').addEventListener('click', (e) => {
