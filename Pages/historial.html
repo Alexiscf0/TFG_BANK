@@ -71,6 +71,7 @@
 </main>
 
 <script src="../Api/nav_check.js"></script>
+<script src="../Api/nav_check.js"></script>
 <script>
     let todosLosMovimientos = [];
     let ordenAscendente = false;
@@ -81,10 +82,8 @@
             const response = await fetch('../Back/movimientos.php');
             const datos = await response.json();
             if (datos.status === "error") { window.location.href = "login.html"; return; }
-
             todosLosMovimientos = datos;
-            ordenarMovimientos(); // Sincronización inicial
-
+            ordenarMovimientos();
             document.getElementById('th-fecha').addEventListener('click', () => {
                 ordenAscendente = !ordenAscendente;
                 ordenarMovimientos();
@@ -97,7 +96,6 @@
         todosLosMovimientos.sort((a, b) => {
             const comp = a.fecha.localeCompare(b.fecha);
             if (comp !== 0) return ordenAscendente ? comp : -comp;
-            // Desempate por ID si la fecha es igual
             return ordenAscendente ? a.id.localeCompare(b.id) : b.id.localeCompare(a.id);
         });
         document.getElementById('th-fecha').innerText = ordenAscendente ? 'Fecha 🔼' : 'Fecha 🔽';
@@ -115,7 +113,7 @@
         tbody.innerHTML = lista.map(mov => {
             const monto = parseFloat(mov.precio || 0);
             const clase = monto >= 0 ? 'monto-positivo' : 'monto-negativo';
-            return `<tr><td>${mov.fecha}</td><td>${mov.concepto}</td><td>${mov.categoria}</td><td><span class="${clase}">${monto.toFixed(2)}€</span></td></tr>`;
+            return `<tr><td>${mov.fecha}</td><td>${mov.concepto}</td><td><span class="tag">${mov.categoria}</span></td><td><span class="${clase}">${monto.toFixed(2)}€</span></td></tr>`;
         }).join('');
     }
 </script>

@@ -6,7 +6,6 @@
     <title>Estadísticas - Kibo</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        /* --- VARIABLES Y CONFIGURACIÓN BASE (IDÉNTICO A PRESUPUESTOS) --- */
         :root {
             --bg: #f0f2f5;
             --card: #ffffff;
@@ -24,7 +23,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             height: 100vh;
             display: flex;
             overflow: hidden;
@@ -32,13 +31,13 @@
             color: var(--text-main);
         }
 
-        /* --- SIDEBAR UNIFICADO (IDÉNTICO A PRESUPUESTOS) --- */
+        /* --- SIDEBAR --- */
         .sidebar {
             width: var(--sidebar-width);
             background-color: var(--sidebar-bg);
             display: flex;
             flex-direction: column;
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: 0.4s;
             padding: 20px 15px;
             border-right: 1px solid rgba(0,0,0,0.05);
             flex-shrink: 0;
@@ -48,15 +47,8 @@
         .sidebar.cerrado { width: 0; padding: 20px 0; opacity: 0; overflow: hidden; }
 
         .brand {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 30px;
-            padding-left: 47px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
+            font-size: 22px; font-weight: 700; color: var(--accent);
+            margin-bottom: 30px; padding-left: 47px; display: flex; align-items: center; gap: 12px; cursor: pointer;
         }
 
         .brand img { height: 32px; width: auto; object-fit: contain; }
@@ -64,87 +56,54 @@
         .menu-items { display: flex; flex-direction: column; gap: 5px; flex-grow: 1; }
 
         .menu-items a {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: var(--text-muted);
-            font-size: 15px;
-            font-weight: 500;
-            padding: 12px 15px;
-            border-radius: 50px;
-            transition: all 0.2s ease;
-            white-space: nowrap;
+            display: flex; align-items: center; text-decoration: none;
+            color: var(--text-muted); font-size: 15px; padding: 12px 15px;
+            border-radius: 50px; transition: 0.2s;
         }
 
         .menu-items a svg { width: 20px; height: 20px; margin-right: 12px; fill: currentColor; opacity: 0.7; }
+        .menu-items a:hover, .menu-items a.activo-page { background-color: var(--accent-light); color: var(--accent); font-weight: 700; }
 
-        .menu-items a:hover, .menu-items a.activo-page {
-            background-color: var(--accent-light);
-            color: var(--accent);
-            font-weight: 700;
-        }
-
-        #linkAdmin {
-            color: #b71c1c;
-            display: none;
-            margin-top: 10px;
-            background-color: #fff0f0;
-        }
-
-        .sidebar-footer {
-            margin-top: auto;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-        }
+        .sidebar-footer { margin-top: auto; border-top: 1px solid #eee; padding-top: 15px; }
 
         .btn-logout {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 12px;
-            background-color: transparent;
-            color: var(--text-muted);
-            border: 1px solid #eee;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-            text-decoration: none;
+            display: flex; align-items: center; justify-content: center; width: 100%;
+            padding: 12px; border: 1px solid #eee; border-radius: 12px; font-weight: 600; cursor: pointer;
+            text-decoration: none; color: var(--text-muted); transition: 0.3s;
         }
+        .btn-logout:hover { background-color: #ffebee; color: #d32f2f; }
 
-        .btn-logout:hover { background-color: #ffebee; color: #d32f2f; border-color: #ffcdd2; }
-
-        /* --- CONTENIDO PRINCIPAL --- */
+        /* --- CONTENIDO --- */
         .main-content { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
         .container-stats { max-width: 1100px; width: 100%; }
+
         .header-stats { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .btn-menu { cursor: pointer; background: white; border: none; padding: 8px 12px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); color: #555; }
 
         .filtros-tiempo { background: white; padding: 5px; border-radius: 50px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; gap: 5px; }
         .filtros-tiempo button { background: transparent; border: none; color: #666; padding: 8px 20px; border-radius: 50px; cursor: pointer; font-weight: 700; transition: 0.3s; }
         .filtros-tiempo button.activo { background: var(--accent); color: white; }
 
         #selector-periodo { margin-bottom: 25px; background: white; padding: 12px 25px; border-radius: 50px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px; align-self: flex-start; }
-        #inputFechaRef, #selectAnio { border: none; outline: none; font-size: 16px; color: var(--accent); font-weight: bold; cursor: pointer; background: transparent; }
 
-        /* CARDS KPI */
+        input[type="date"], input[type="month"], select { border: none; outline: none; font-size: 16px; color: var(--accent); font-weight: bold; background: transparent; cursor: pointer; }
+
         .kpi-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-bottom: 30px; }
         .card { background: var(--card); padding: 30px; border-radius: 16px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); text-align: center; }
         .card h3 { font-size: 0.9rem; color: #888; text-transform: uppercase; margin-bottom: 10px; }
         .card .numero { font-size: 2.3rem; font-weight: 800; }
+
         .positivo { color: var(--state-good); }
         .negativo { color: var(--state-bad); }
 
-        /* CATEGORÍAS CON PROGRESO */
         .top-categories { background: var(--card); padding: 30px; border-radius: 16px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); width: 100%; }
         .cat-item { display: flex; flex-direction: column; padding: 15px 20px; border-radius: 12px; margin-bottom: 15px; background: #fafafa; }
         .cat-info { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 8px; }
+
         .progress-bar-container { width: 100%; height: 8px; background: var(--progress-bg); border-radius: 10px; overflow: hidden; }
         .progress-fill { height: 100%; transition: width 0.6s ease; }
 
         .btn-pdf { background: #fff; border: 1px solid #ddd; padding: 8px 15px; border-radius: 50px; cursor: pointer; font-weight: 700; color: #555; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
-        .btn-pdf:hover { background: #f5f5f5; border-color: var(--accent); color: var(--accent); }
+        .btn-pdf:hover { border-color: var(--accent); color: var(--accent); }
     </style>
 </head>
 <body>
@@ -154,51 +113,37 @@
         <img src="../images/Kibo.png" alt="Kibo Logo">
         <span>Kibo</span>
     </div>
-
     <nav class="menu-items">
-        <a href="index.html">
-            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> Inicio
-        </a>
-        <a href="historial.html">
-            <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg> Historial
-        </a>
-        <a href="estadistica.html" class="activo-page">
-            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg> Estadísticas
-        </a>
-        <a href="presupuestos.html">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg> Presupuestos
-        </a>
-        <a href="graficos.html">
-            <svg viewBox="0 0 24 24"><path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z"/></svg> Hucha
-        </a>
-        <a href="configadmin.html" id="linkAdmin">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg> Panel Admin
-        </a>
+        <a href="index.html"> <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> Inicio </a>
+        <a href="historial.html"> <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg> Historial </a>
+        <a href="estadistica.html" class="activo-page"> <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg> Estadísticas </a>
+        <a href="presupuestos.html"> <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg> Presupuestos </a>
+        <a href="graficos.html"> <svg viewBox="0 0 24 24"><path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z"/></svg> Hucha </a>
+        <a href="configadmin.html" id="linkAdmin"> <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3 3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg> Panel Admin </a>
     </nav>
-
     <div class="sidebar-footer">
         <a href="#" id="btnCerrarSesion" class="btn-logout">Cerrar Sesión</a>
     </div>
 </aside>
 
 <main class="main-content">
-    <div class="container-stats">
+    <div class="container-stats" id="reporte-contenido">
         <div class="header-stats">
             <div style="display: flex; align-items: center; gap: 15px;">
                 <button class="btn-menu" onclick="alternarMenu()">☰</button>
-                <h1>Estadísticas</h1>
-                <button id="btnDescargarPDF" class="btn-pdf">📄 PDF</button>
+                <h1>Resumen Mensual</h1>
+                <button id="btnDescargarPDF" class="btn-pdf">📄 Generar PDF</button>
             </div>
             <div class="filtros-tiempo">
                 <button id="btnSemana">Semana</button>
-                <button id="btnMes">Mes</button>
+                <button id="btnMes" class="activo">Mes</button>
                 <button id="btnAño">Año</button>
             </div>
         </div>
 
         <div id="selector-periodo">
-            <span id="labelPeriodo">📅 Seleccionar Día:</span>
-            <input type="date" id="inputFechaRef">
+            <span id="labelPeriodo">📅 Seleccionar Mes:</span>
+            <input type="month" id="inputFechaRef">
             <select id="selectAnio" style="display:none;"></select>
         </div>
 
@@ -209,7 +154,7 @@
         </div>
 
         <div class="top-categories">
-            <h2>Limitador de Gastos</h2>
+            <h2>Limitador de Gastos (Real vs Presupuesto)</h2>
             <div id="lista-categorias">Cargando datos...</div>
         </div>
     </div>
@@ -217,7 +162,7 @@
 
 <script src="../Api/nav_check.js"></script>
 <script>
-    let periodoActual = 'semana';
+    let periodoActual = 'mes';
     const inputFecha = document.getElementById('inputFechaRef');
     const selectAnio = document.getElementById('selectAnio');
 
@@ -225,16 +170,29 @@
 
     function popularAnios() {
         const actual = new Date().getFullYear();
-        for (let i = actual; i >= 2010; i--) {
+        for (let i = actual; i >= 2020; i--) {
             const opt = document.createElement("option");
             opt.value = i; opt.textContent = i;
             selectAnio.appendChild(opt);
         }
     }
 
+    // Lógica de exportación PDF
+    document.getElementById('btnDescargarPDF').addEventListener('click', () => {
+        const elemento = document.getElementById('reporte-contenido');
+        const opt = {
+            margin: 10,
+            filename: `Kibo_Informe_${periodoActual}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(elemento).save();
+    });
+
     async function cargarEstadisticas(periodo, fechaRef) {
         try {
-            // 1. Obtener Presupuestos (Límites) de MongoDB
+            // 1. Obtener límites (presupuestos) de MongoDB
             const resP = await fetch('../Back/get_presupuestos.php');
             const dataP = await resP.json();
             const limites = {};
@@ -242,38 +200,38 @@
                 dataP.data.forEach(p => limites[p.categoria] = parseFloat(p.limite_mensual));
             }
 
-            // 2. Obtener Gastos Reales
+            // 2. Obtener gastos reales
             const resS = await fetch(`../Back/api_stats.php?periodo=${periodo}&fecha_ref=${fechaRef}`);
             const dataS = await resS.json();
 
             if (dataS.status === "success") {
                 const fmt = (v) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(v);
-                document.getElementById('kpi-ingresos').innerText = "+ " + fmt(dataS.ingresos);
-                document.getElementById('kpi-gastos').innerText = "- " + fmt(dataS.gastos);
+
+                document.getElementById('kpi-ingresos').innerText = fmt(dataS.ingresos);
+                document.getElementById('kpi-gastos').innerText = fmt(dataS.gastos);
+
                 const ahr = document.getElementById('kpi-ahorro');
-                ahr.innerText = (dataS.ahorro >= 0 ? "+ " : "") + fmt(dataS.ahorro);
-                ahr.style.color = dataS.ahorro >= 0 ? "var(--state-good)" : "var(--state-bad)";
+                ahr.innerText = fmt(dataS.ahorro);
+                ahr.className = "numero " + (dataS.ahorro >= 0 ? "positivo" : "negativo");
 
                 const lista = document.getElementById('lista-categorias');
                 lista.innerHTML = "";
                 const icons = { "Comida": "🍔", "Ocio": "🎉", "Transporte": "🚌", "Vivienda": "🏠", "Otros": "📦" };
 
-                // Mezclar categorías de gastos y presupuestos
-                const todasLasCats = new Set([...Object.keys(dataS.categorias), ...Object.keys(limites)]);
-
-                todasLasCats.forEach(nom => {
-                    if (!nom || nom === "null") return;
+                // Mostrar categorías con barras de progreso
+                Object.keys(dataS.categorias).forEach(nom => {
                     const gasto = Math.abs(dataS.categorias[nom] || 0);
                     const limite = limites[nom] || 0;
-                    let barra = "";
+                    let barraHtml = "";
 
                     if (limite > 0) {
                         const porc = Math.min((gasto / limite) * 100, 100);
-                        barra = `
+                        const colorBarra = porc >= 90 ? 'var(--state-bad)' : 'var(--accent)';
+                        barraHtml = `
                             <div class="progress-bar-container">
-                                <div class="progress-fill" style="width:${porc}%; background:${porc >= 90 ? 'var(--state-bad)' : 'var(--accent)'}"></div>
+                                <div class="progress-fill" style="width:${porc}%; background:${colorBarra}"></div>
                             </div>
-                            <small>Límite: ${fmt(limite)} (${porc.toFixed(0)}%)</small>`;
+                            <small>Ppto: ${fmt(limite)} (${porc.toFixed(0)}%)</small>`;
                     }
 
                     const div = document.createElement('div');
@@ -281,13 +239,16 @@
                     div.innerHTML = `
                         <div class="cat-info">
                             <span>${icons[nom] || "💰"} ${nom}</span>
-                            <span>- ${fmt(gasto)}</span>
+                            <span>${fmt(gasto)}</span>
                         </div>
-                        ${barra}`;
+                        ${barraHtml}`;
                     lista.appendChild(div);
                 });
             }
-        } catch (e) { console.error("Error cargando datos:", e); }
+        } catch (e) {
+            // Gestión de errores amigable
+            document.getElementById('lista-categorias').innerText = "Error al cargar las estadísticas.";
+        }
     }
 
     document.querySelectorAll('.filtros-tiempo button').forEach(b => b.addEventListener('click', function() {
@@ -295,17 +256,15 @@
         this.classList.add('activo');
         const modo = this.innerText.toLowerCase();
         const hoy = new Date().toISOString().split('T')[0];
+
         if (modo.includes('semana')) {
-            periodoActual = 'semana'; document.getElementById('labelPeriodo').innerText = "📅 Seleccionar Día:";
+            periodoActual = 'semana'; inputFecha.type = 'date'; inputFecha.value = hoy;
             inputFecha.style.display = "block"; selectAnio.style.display = "none";
-            inputFecha.type = 'date'; inputFecha.value = hoy;
         } else if (modo.includes('año')) {
-            periodoActual = 'ano'; document.getElementById('labelPeriodo').innerText = "📅 Seleccionar Año:";
-            inputFecha.style.display = "none"; selectAnio.style.display = "block";
+            periodoActual = 'ano'; selectAnio.style.display = "block"; inputFecha.style.display = "none";
         } else {
-            periodoActual = 'mes'; document.getElementById('labelPeriodo').innerText = "📅 Seleccionar Mes:";
+            periodoActual = 'mes'; inputFecha.type = 'month'; inputFecha.value = hoy.substring(0, 7);
             inputFecha.style.display = "block"; selectAnio.style.display = "none";
-            inputFecha.type = 'month'; inputFecha.value = hoy.substring(0, 7);
         }
         ejecutarCarga();
     }));
@@ -318,11 +277,10 @@
 
     inputFecha.addEventListener('change', ejecutarCarga);
     selectAnio.addEventListener('change', ejecutarCarga);
-    window.addEventListener('load', () => { popularAnios(); document.getElementById('btnSemana').click(); });
-
-    document.getElementById('btnCerrarSesion').addEventListener('click', (e) => {
-        e.preventDefault();
-        window.location.replace('login.html');
+    window.addEventListener('load', () => {
+        popularAnios();
+        inputFecha.value = new Date().toISOString().substring(0, 7);
+        ejecutarCarga();
     });
 </script>
 </body>

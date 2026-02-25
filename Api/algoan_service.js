@@ -1,4 +1,3 @@
-// algoan_service.js
 import { api_algoan } from './api_config.js';
 
 async function getAccessToken() {
@@ -11,7 +10,7 @@ async function getAccessToken() {
         },
         body: "grant_type=client_credentials"
     });
-    if (!response.ok) throw new Error("Error de autenticación con Algoan");
+    if (!response.ok) throw new Error("Error de autenticación");
     const data = await response.json();
     return data.access_token;
 }
@@ -27,19 +26,19 @@ export async function fetchBankingData() {
         if (!response.ok) return null;
         return await response.json();
     } catch (error) {
-        console.error("Error en conexión real:", error);
         return null;
     }
 }
 
 export function getMockBankingData() {
-    console.warn("⚠️ Usando datos simulados (Plan B)");
     return {
         score: 745,
         analysis: {
             details: {
-                category_distribution: { "Alimentación": 450, "Transporte": 85, "Vivienda": 750, "Ocio": 120 },
-                weekly_trend: [120, 45, 180, 90, 250, 400, 150]
+                expense_categories: { "Alimentación": 450, "Transporte": 85, "Vivienda": 750, "Ocio": 120 },
+                income_categories: { "Nómina": 2100 },
+                expense_trend: [120, 45, 180, 90, 250, 400, 150],
+                income_trend: [2100, 0, 0, 0, 0, 0, 0]
             }
         }
     };
